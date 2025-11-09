@@ -14,8 +14,6 @@
       --dark-bg: #000000;
       --dark-bg-2: #331f00;
       --dark-border: #664d00;
-      --paper-color: #f5e9c9;
-      --paper-border: #8b7c5a;
     }
 
     /* Общие настройки */
@@ -29,169 +27,6 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
-    }
-
-    /* Контейнер для сцены */
-    .scene-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transition: transform 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      transform-origin: center center;
-    }
-
-    /* Вид компьютера */
-    .computer-view {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Вид стола */
-    .desk-view {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-      overflow: hidden;
-    }
-
-    /* Контейнер для листка с правилами */
-    .rules-container {
-      width: 90%;
-      height: 80%;
-      max-width: 800px;
-      background-color: var(--paper-color);
-      border: 2px solid var(--paper-border);
-      border-radius: 8px;
-      box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        inset 0 0 20px rgba(139, 124, 90, 0.2);
-      position: relative;
-      transform: rotate(-1deg);
-      color: #5a4a3a;
-      font-family: 'Georgia', serif;
-      line-height: 1.6;
-      overflow-y: auto;
-      padding: 20px;
-    }
-
-    .rules-container::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        linear-gradient(90deg, transparent 95%, rgba(139, 124, 90, 0.1) 100%),
-        linear-gradient(rgba(139, 124, 90, 0.1) 1px, transparent 1px);
-      background-size: 20px 20px;
-      pointer-events: none;
-      border-radius: 6px;
-    }
-
-    .rules-header {
-      text-align: center;
-      margin-bottom: 25px;
-      border-bottom: 2px solid var(--paper-border);
-      padding-bottom: 15px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .rules-header h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #3a2e1e;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    .rules-content {
-      font-size: 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .rules-section {
-      margin-bottom: 20px;
-    }
-
-    .rules-section h2 {
-      font-size: 16px;
-      color: #4a3a2a;
-      margin-bottom: 10px;
-      border-left: 3px solid #8b7c5a;
-      padding-left: 10px;
-    }
-
-    .rules-list {
-      margin: 0;
-      padding-left: 20px;
-    }
-
-    .rules-list li {
-      margin-bottom: 8px;
-    }
-
-    .warning {
-      background: rgba(255, 51, 0, 0.1);
-      border-left: 3px solid var(--creepy-red);
-      padding: 10px 15px;
-      margin: 15px 0;
-      border-radius: 0 4px 4px 0;
-    }
-
-    /* Кнопки перехода */
-    .view-toggle {
-      position: absolute;
-      background: rgba(255, 207, 64, 0.2);
-      border: 2px solid var(--soft-yellow);
-      color: var(--soft-yellow);
-      padding: 12px 20px;
-      cursor: pointer;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 14px;
-      text-shadow: 0 0 10px var(--soft-yellow-glow);
-      transition: all 0.3s ease;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .view-toggle:hover {
-      background: rgba(255, 207, 64, 0.4);
-      transform: scale(1.05);
-    }
-
-    .view-toggle.down {
-      bottom: 20px;
-      right: 20px;
-    }
-
-    .view-toggle.up {
-      top: 20px;
-      right: 20px;
-    }
-
-    .arrow {
-      font-size: 18px;
-      transition: transform 0.3s ease;
-    }
-
-    .view-toggle:hover .arrow {
-      transform: translateY(3px);
-    }
-
-    .view-toggle.up:hover .arrow {
-      transform: translateY(-3px);
     }
 
     /* Левая панель */
@@ -602,6 +437,234 @@
       padding: 20px;
     }
 
+    /* Сцена стола */
+    #desk-scene {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #1a0f00 0%, #0a0600 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    /* Деревянный стол */
+    .desk {
+      width: 90%;
+      height: 60%;
+      background: linear-gradient(to bottom, #3d2a14 0%, #2b1d0c 100%);
+      border: 15px solid #1a1005;
+      border-radius: 10px;
+      position: relative;
+      box-shadow: 
+        0 0 50px rgba(0, 0, 0, 0.8),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    /* Листок бумаги */
+    .paper {
+      position: absolute;
+      width: 300px;
+      height: 400px;
+      background: #f5f0e6;
+      border: 1px solid #d4c9b8;
+      box-shadow: 
+        0 0 20px rgba(0, 0, 0, 0.3),
+        0 0 10px rgba(255, 207, 64, 0.1);
+      cursor: grab;
+      transform-origin: center;
+      transition: box-shadow 0.3s;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      color: #3a2c1a;
+      font-size: 14px;
+      line-height: 1.4;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .paper:active {
+      cursor: grabbing;
+      box-shadow: 
+        0 0 25px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(255, 207, 64, 0.2);
+    }
+
+    .paper-texture {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0,0,0,0.03) 1px, transparent 1px),
+        radial-gradient(circle at 80% 60%, rgba(0,0,0,0.03) 1px, transparent 1px);
+      background-size: 30px 30px, 40px 40px;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Подсказки управления */
+    .controls-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      color: var(--soft-yellow);
+      font-size: 14px;
+      text-shadow: 0 0 10px var(--soft-yellow-glow);
+      z-index: 1001;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+    }
+
+    /* Анимации переходов */
+    .transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--soft-yellow);
+      font-size: 24px;
+      text-shadow: 0 0 10px var(--soft-yellow-glow);
+    }
+
+    .eye-close {
+      animation: eyeClose 2s ease-in-out;
+    }
+
+    .eye-open {
+      animation: eyeOpen 2s ease-in-out;
+    }
+
+    @keyframes eyeClose {
+      0% {
+        opacity: 0;
+        filter: blur(0px);
+      }
+      30% {
+        opacity: 1;
+        filter: blur(0px);
+      }
+      70% {
+        opacity: 1;
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 0;
+        filter: blur(20px);
+      }
+    }
+
+    @keyframes eyeOpen {
+      0% {
+        opacity: 0;
+        filter: blur(20px);
+      }
+      30% {
+        opacity: 1;
+        filter: blur(10px);
+      }
+      70% {
+        opacity: 1;
+        filter: blur(0px);
+      }
+      100% {
+        opacity: 0;
+        filter: blur(0px);
+      }
+    }
+
+    .screen-move-up {
+      animation: screenMoveUp 1.5s ease-in-out;
+    }
+
+    .screen-move-down {
+      animation: screenMoveDown 1.5s ease-in-out;
+    }
+
+    .desk-move-down {
+      animation: deskMoveDown 1.5s ease-in-out;
+    }
+
+    .desk-move-up {
+      animation: deskMoveUp 1.5s ease-in-out;
+    }
+
+    @keyframes screenMoveUp {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(-25%);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes screenMoveDown {
+      0% {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      50% {
+        transform: translateY(-25%);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes deskMoveDown {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translateY(25%);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+    }
+
+    @keyframes deskMoveUp {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      50% {
+        transform: translateY(25%);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     /* Медиа-запросы для адаптации под разные экраны */
     @media (min-width: 768px) {
       body {
@@ -643,19 +706,6 @@
       .tab {
         font-size: 16px;
       }
-
-      .rules-container {
-        width: 70%;
-        height: 85%;
-      }
-
-      .rules-content {
-        font-size: 16px;
-      }
-
-      .rules-section h2 {
-        font-size: 18px;
-      }
     }
 
     @media (min-width: 1024px) {
@@ -663,221 +713,90 @@
         width: 700px;
       }
     }
-
-    /* Анимации для перехода камеры */
-    @keyframes cameraMoveToDesk {
-      0% {
-        transform: translateY(0) scale(1);
-      }
-      70% {
-        transform: translateY(80%) scale(0.8);
-      }
-      100% {
-        transform: translateY(100%) scale(0.7);
-      }
-    }
-
-    @keyframes cameraMoveToComputer {
-      0% {
-        transform: translateY(100%) scale(0.7);
-      }
-      30% {
-        transform: translateY(80%) scale(0.8);
-      }
-      100% {
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .scene-container.to-desk {
-      animation: cameraMoveToDesk 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    }
-
-    .scene-container.to-computer {
-      animation: cameraMoveToComputer 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    }
   </style>
 </head>
 <body>
-  <div class="scene-container" id="scene-container">
-    <!-- Вид компьютера -->
-    <div class="computer-view" id="computer-view">
-      <div id="left-panel">
-        <div class="tabs">
-          <div class="tab active" data-tab="signals">Сигналы</div>
-          <div class="tab" data-tab="telescopes">Радиотелескопы</div>
-          <div class="tab" data-tab="history">История сигналов</div>
-        </div>
-        <div id="signals" class="tab-content">
-          <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
-          
-          <div class="controls-row">
-            <button id="receive-btn" disabled>Загрузка сигналов...</button>
-            
-            <div class="filter-container">
-              <div class="filter-label">Фильтр частот</div>
-              <label class="switch">
-                <input type="checkbox" id="filter-toggle">
-                <span class="slider"></span>
-              </label>
-              <div class="filter-status" id="filter-status">ВЫКЛ</div>
-            </div>
-          </div>
-          
-          <div id="loading-status" class="loading"></div>
-        </div>
-        <div id="telescopes" class="tab-content" style="display:none;">
-          <table>
-            <thead>
-              <tr>
-                <th>Название</th>
-                <th>Статус</th>
-                <th>Соединение</th>
-                <th>Действия</th>
-              </tr>
-            </thead>
-            <tbody id="telescopes-body"></tbody>
-          </table>
-        </div>
-        <div id="history" class="tab-content" style="display:none; flex-direction: column;">
-          <div id="history-list" tabindex="0"></div>
-          <button id="delete-button">Удалить выбранный</button>
-        </div>
-      </div>
-      <div id="right-panel">
-        <textarea id="status-text" readonly></textarea>
-        <textarea id="binary-text" readonly></textarea>
-        <button id="decrypt-btn" disabled>Расшифровать</button>
-        <textarea id="result-text" readonly></textarea>
-      </div>
-      
-      <!-- Кнопка перехода на стол -->
-      <button class="view-toggle down" id="to-desk-btn">
-        Посмотреть правила <span class="arrow">↓</span>
-      </button>
+  <!-- Основной интерфейс компьютера -->
+  <div id="left-panel">
+    <div class="tabs">
+      <div class="tab active" data-tab="signals">Сигналы</div>
+      <div class="tab" data-tab="telescopes">Радиотелескопы</div>
+      <div class="tab" data-tab="history">История сигналов</div>
     </div>
-
-    <!-- Вид стола -->
-    <div class="desk-view" id="desk-view">
-      <div class="rules-container">
-        <div class="rules-header">
-          <h1>ПРАВИЛА СИСТЕМЫ ПРИЁМА СИГНАЛОВ</h1>
-          <p><em>Станция космического мониторинга "ОРИОН"</em></p>
-        </div>
+    <div id="signals" class="tab-content">
+      <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
+      
+      <div class="controls-row">
+        <button id="receive-btn" disabled>Загрузка сигналов...</button>
         
-        <div class="rules-content">
-          <div class="rules-section">
-            <h2>🎯 ЦЕЛЬ СИСТЕМЫ</h2>
-            <p>Ваша задача - принимать и расшифровывать космические сигналы, поступающие от радиотелескопов. Определяйте природу сигналов и следите за аномалиями.</p>
-          </div>
-
-          <div class="rules-section">
-            <h2>⚙️ ИНТЕРФЕЙС УПРАВЛЕНИЯ</h2>
-            <ul class="rules-list">
-              <li><strong>Вкладка "Сигналы"</strong> - основной пульт управления приёмом сигналов</li>
-              <li><strong>Вкладка "Радиотелескопы"</strong> - мониторинг состояния оборудования</li>
-              <li><strong>Вкладка "История сигналов"</strong> - архив принятых сообщений</li>
-            </ul>
-          </div>
-
-          <div class="rules-section">
-            <h2>🚀 ПРОЦЕСС РАБОТЫ</h2>
-            <ol class="rules-list">
-              <li>Убедитесь, что все радиотелескопы находятся в режиме "Онлайн"</li>
-              <li>Нажмите кнопку "Принять сигнал" для начала сканирования</li>
-              <li>Дождитесь завершения получения бинарного кода</li>
-              <li>Используйте кнопку "Расшифровать" для декодирования сообщения</li>
-              <li>Анализируйте полученную информацию</li>
-            </ol>
-          </div>
-
-          <div class="rules-section">
-            <h2>⚠️ ВАЖНЫЕ ОСОБЕННОСТИ</h2>
-            <ul class="rules-list">
-              <li>Сигналы бывают нормальные и аномальные</li>
-              <li>Аномальные сигналы могут вызывать сбои в системе</li>
-              <li>Фильтр частот предотвращает повторение одинаковых сигналов</li>
-              <li>Сломанные телескопы требуют переподключения</li>
-            </ul>
-          </div>
-
-          <div class="warning">
-            <strong>ВНИМАНИЕ:</strong> Некоторые сигналы могут содержать опасную информацию. 
-            При обнаружении аномалий немедленно докладывайте главному оператору.
-          </div>
-
-          <div class="rules-section">
-            <h2>🎮 УПРАВЛЕНИЕ</h2>
-            <ul class="rules-list">
-              <li><strong>Мышь</strong> - навигация по интерфейсу</li>
-              <li><strong>Клик</strong> - выбор элементов управления</li>
-              <li><strong>Стрелки перехода</strong> - смена вида между компьютером и столом</li>
-              <li><strong>Скролл</strong> - прокрутка правил на столе</li>
-            </ul>
-          </div>
-
-          <div class="rules-section">
-            <h2>📊 СТАТУСЫ СИГНАЛОВ</h2>
-            <ul class="rules-list">
-              <li><span style="color: var(--soft-yellow);">● Нормальный</span> - стандартные космические сигналы</li>
-              <li><span style="color: var(--creepy-red);">● Аномальный</span> - потенциально опасные сообщения</li>
-              <li><span style="color: #ffd85c;">● Онлайн</span> - телескоп работает исправно</li>
-              <li><span style="color: var(--creepy-red);">● Оффлайн</span> - телескоп требует переподключения</li>
-            </ul>
-          </div>
-
-          <div class="rules-section">
-            <h2>🔧 ТЕХНИЧЕСКИЕ ДЕТАЛИ</h2>
-            <ul class="rules-list">
-              <li>Система автоматически генерирует бинарные последовательности</li>
-              <li>Процесс расшифровки занимает несколько секунд</li>
-              <li>Все принятые сигналы сохраняются в истории</li>
-              <li>Система работает в режиме реального времени</li>
-            </ul>
-          </div>
+        <div class="filter-container">
+          <div class="filter-label">Фильтр частот</div>
+          <label class="switch">
+            <input type="checkbox" id="filter-toggle">
+            <span class="slider"></span>
+          </label>
+          <div class="filter-status" id="filter-status">ВЫКЛ</div>
         </div>
       </div>
       
-      <!-- Кнопка возврата к компьютеру -->
-      <button class="view-toggle up" id="to-computer-btn">
-        <span class="arrow">↑</span> Вернуться к компьютеру
-      </button>
+      <div id="loading-status" class="loading"></div>
+    </div>
+    <div id="telescopes" class="tab-content" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Статус</th>
+            <th>Соединение</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="telescopes-body"></tbody>
+      </table>
+    </div>
+    <div id="history" class="tab-content" style="display:none; flex-direction: column;">
+      <div id="history-list" tabindex="0"></div>
+      <button id="delete-button">Удалить выбранный</button>
+    </div>
+  </div>
+  <div id="right-panel">
+    <textarea id="status-text" readonly></textarea>
+    <textarea id="binary-text" readonly></textarea>
+    <button id="decrypt-btn" disabled>Расшифровать</button>
+    <textarea id="result-text" readonly></textarea>
+  </div>
+
+  <!-- Сцена стола -->
+  <div id="desk-scene">
+    <div class="desk">
+      <div class="paper">
+        <div class="paper-texture"></div>
+        <h3 style="text-align: center; margin-bottom: 15px; border-bottom: 1px solid #d4c9b8; padding-bottom: 10px;">
+          ЗАПИСИ О СИГНАЛАХ
+        </h3>
+        <div id="paper-content">
+          <p><strong>Дата:</strong> <span id="paper-date"></span></p>
+          <p><strong>Сигнал:</strong> <span id="paper-signal-type"></span></p>
+          <div id="paper-message" style="margin-top: 15px; font-style: italic; min-height: 200px;">
+            Здесь будет отображаться содержимое выбранного сигнала...
+          </div>
+          <div style="margin-top: 20px; font-size: 12px; color: #7a6a51;">
+            <p>/// СИСТЕМНЫЕ ЗАМЕТКИ ///</p>
+            <p>Аномальные сигналы требуют особого внимания.</p>
+            <p>Проверять историю приёма каждые 24 часа.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="controls-hint">
+      Перемещайте листок мышью • Вращайте с зажатым Shift • Нажмите ↑ для возврата к компьютеру
     </div>
   </div>
 
+  <!-- Оверлей перехода -->
+  <div id="transition-overlay" class="transition-overlay"></div>
+
   <script>
-    // Управление переходами камеры
-    const sceneContainer = document.getElementById('scene-container');
-    const computerView = document.getElementById('computer-view');
-    const deskView = document.getElementById('desk-view');
-    const toDeskBtn = document.getElementById('to-desk-btn');
-    const toComputerBtn = document.getElementById('to-computer-btn');
-
-    // Функция перехода к столу
-    function switchToDesk() {
-      sceneContainer.classList.remove('to-computer');
-      sceneContainer.classList.add('to-desk');
-      setTimeout(() => {
-        computerView.style.display = 'none';
-        deskView.style.display = 'flex';
-      }, 1500);
-    }
-
-    // Функция возврата к компьютеру
-    function switchToComputer() {
-      sceneContainer.classList.remove('to-desk');
-      sceneContainer.classList.add('to-computer');
-      setTimeout(() => {
-        deskView.style.display = 'none';
-        computerView.style.display = 'flex';
-      }, 1500);
-    }
-
-    // Обработчики событий для кнопок перехода
-    toDeskBtn.addEventListener('click', switchToDesk);
-    toComputerBtn.addEventListener('click', switchToComputer);
-
-    // Оригинальный код системы приёма сигналов
     // Флаг блокировки переподключения
     let reconnectInProgress = new Set();
 
@@ -897,6 +816,10 @@
     const decryptAudio2 = new Audio('sound/random_dechifrator_2.mp3');
     decryptAudio1.volume = 0.5;
     decryptAudio2.volume = 0.5;
+
+    // Звук перехода
+    const transitionAudio = new Audio('sound/transition.mp3');
+    transitionAudio.volume = 0.6;
 
     // Данные сигналов (будут загружены из файлов)
     let NORMAL_SIGNALS = [];
@@ -925,6 +848,14 @@
     const filterToggle = document.getElementById('filter-toggle');
     const filterStatus = document.getElementById('filter-status');
 
+    // Элементы сцены стола
+    const deskScene = document.getElementById('desk-scene');
+    const paper = document.querySelector('.paper');
+    const transitionOverlay = document.getElementById('transition-overlay');
+    const paperDate = document.getElementById('paper-date');
+    const paperSignalType = document.getElementById('paper-signal-type');
+    const paperMessage = document.getElementById('paper-message');
+
     // История сигналов
     let signalHistory = [];
     let creepyActive = false;
@@ -938,6 +869,14 @@
 
     // Флаг для отслеживания процесса расшифровки
     let isDecrypting = false;
+
+    // Переменные для управления листком
+    let isDragging = false;
+    let startX, startY;
+    let initialX, initialY;
+    let rotationX = 0;
+    let rotationY = 0;
+    let isRotating = false;
 
     // Функция для получения случайного неповторяющегося сигнала
     function getRandomSignal(signalArray, usedSet) {
@@ -1465,12 +1404,265 @@
       decryptBtn.disabled = true;
     });
 
+    // Управление листком бумаги
+    function initPaperControls() {
+      // Начальная позиция листка
+      paper.style.left = '50%';
+      paper.style.top = '50%';
+      paper.style.transform = 'translate(-50%, -50%)';
+      
+      // Обработчики событий для перемещения
+      paper.addEventListener('mousedown', startDrag);
+      paper.addEventListener('touchstart', startDragTouch);
+      
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('touchmove', dragTouch);
+      
+      document.addEventListener('mouseup', stopDrag);
+      document.addEventListener('touchend', stopDrag);
+      
+      // Обработчик для вращения с Shift
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Shift') {
+          isRotating = true;
+          paper.style.cursor = 'grabbing';
+        }
+      });
+      
+      document.addEventListener('keyup', (e) => {
+        if (e.key === 'Shift') {
+          isRotating = false;
+          paper.style.cursor = isDragging ? 'grabbing' : 'grab';
+        }
+      });
+    }
+
+    function startDrag(e) {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      initialX = parseInt(paper.style.left) || 0;
+      initialY = parseInt(paper.style.top) || 0;
+      paper.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+
+    function startDragTouch(e) {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      initialX = parseInt(paper.style.left) || 0;
+      initialY = parseInt(paper.style.top) || 0;
+      e.preventDefault();
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      
+      const currentX = e.clientX;
+      const currentY = e.clientY;
+      
+      if (isRotating) {
+        // Вращение
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        rotationX += deltaY * 0.5;
+        rotationY += deltaX * 0.5;
+        
+        paper.style.transform = `translate(-50%, -50%) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      } else {
+        // Перемещение
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        
+        paper.style.left = `${initialX + deltaX}px`;
+        paper.style.top = `${initialY + deltaY}px`;
+        paper.style.transform = `translate(0, 0) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      }
+      
+      startX = currentX;
+      startY = currentY;
+    }
+
+    function dragTouch(e) {
+      if (!isDragging) return;
+      
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      
+      if (isRotating) {
+        // Вращение
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        rotationX += deltaY * 0.5;
+        rotationY += deltaX * 0.5;
+        
+        paper.style.transform = `translate(-50%, -50%) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      } else {
+        // Перемещение
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        
+        paper.style.left = `${initialX + deltaX}px`;
+        paper.style.top = `${initialY + deltaY}px`;
+        paper.style.transform = `translate(0, 0) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+      }
+      
+      startX = currentX;
+      startY = currentY;
+      e.preventDefault();
+    }
+
+    function stopDrag() {
+      isDragging = false;
+      paper.style.cursor = 'grab';
+    }
+
+    // Переходы между сценами
+    async function transitionToDesk() {
+      // Останавливаем ambient звук
+      ambientAudio.pause();
+      
+      // Показываем оверлей перехода
+      transitionOverlay.style.display = 'flex';
+      transitionOverlay.textContent = 'ПЕРЕХОД К СТОЛУ...';
+      transitionOverlay.classList.add('eye-close');
+      
+      // Воспроизводим звук перехода
+      transitionAudio.currentTime = 0;
+      transitionAudio.play();
+      
+      // Анимация поднятия экрана
+      document.body.classList.add('screen-move-up');
+      
+      // Ждём завершения анимации
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Скрываем основной интерфейс
+      document.getElementById('left-panel').style.display = 'none';
+      document.getElementById('right-panel').style.display = 'none';
+      
+      // Показываем сцену стола
+      deskScene.style.display = 'flex';
+      deskScene.classList.add('desk-move-up');
+      
+      // Анимация открытия глаз
+      transitionOverlay.textContent = '';
+      transitionOverlay.classList.remove('eye-close');
+      transitionOverlay.classList.add('eye-open');
+      
+      // Ждём завершения анимации
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Скрываем оверлей
+      transitionOverlay.style.display = 'none';
+      transitionOverlay.classList.remove('eye-open');
+      
+      // Обновляем содержимое листка, если выбран сигнал из истории
+      updatePaperContent();
+    }
+
+    async function transitionToComputer() {
+      // Показываем оверлей перехода
+      transitionOverlay.style.display = 'flex';
+      transitionOverlay.textContent = 'ВОЗВРАТ К КОМПЬЮТЕРУ...';
+      transitionOverlay.classList.add('eye-close');
+      
+      // Воспроизводим звук перехода
+      transitionAudio.currentTime = 0;
+      transitionAudio.play();
+      
+      // Анимация опускания стола
+      deskScene.classList.add('desk-move-down');
+      
+      // Ждём завершения анимации
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Скрываем сцену стола
+      deskScene.style.display = 'none';
+      deskScene.classList.remove('desk-move-up', 'desk-move-down');
+      
+      // Показываем основной интерфейс
+      document.getElementById('left-panel').style.display = 'flex';
+      document.getElementById('right-panel').style.display = 'flex';
+      document.body.classList.remove('screen-move-up');
+      document.body.classList.add('screen-move-down');
+      
+      // Анимация открытия глаз
+      transitionOverlay.textContent = '';
+      transitionOverlay.classList.remove('eye-close');
+      transitionOverlay.classList.add('eye-open');
+      
+      // Ждём завершения анимации
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Скрываем оверлей
+      transitionOverlay.style.display = 'none';
+      transitionOverlay.classList.remove('eye-open');
+      document.body.classList.remove('screen-move-down');
+      
+      // Возобновляем ambient звук
+      if (ambientStarted) {
+        ambientAudio.play();
+      }
+    }
+
+    function updatePaperContent() {
+      const selected = historyList.querySelector('.option.selected');
+      if (selected) {
+        const signalId = parseInt(selected.dataset.id);
+        const signal = signalHistory.find(s => s.id === signalId);
+        if (signal) {
+          const date = new Date();
+          paperDate.textContent = date.toLocaleDateString('ru-RU');
+          paperSignalType.textContent = signal.creepy ? 'АНОМАЛЬНЫЙ' : 'НОРМАЛЬНЫЙ';
+          paperMessage.textContent = signal.result;
+          
+          if (signal.creepy) {
+            paperMessage.style.color = '#8b0000';
+            paperMessage.style.fontWeight = 'bold';
+          } else {
+            paperMessage.style.color = '#3a2c1a';
+            paperMessage.style.fontWeight = 'normal';
+          }
+        }
+      } else {
+        paperDate.textContent = new Date().toLocaleDateString('ru-RU');
+        paperSignalType.textContent = 'НЕТ ДАННЫХ';
+        paperMessage.textContent = 'Выберите сигнал в истории на компьютере для просмотра деталей.';
+        paperMessage.style.color = '#7a6a51';
+        paperMessage.style.fontWeight = 'normal';
+      }
+    }
+
+    // Обработчики клавиш для переходов
+    document.addEventListener('keydown', (e) => {
+      // Переход к столу с компьютера (стрелка вниз)
+      if (e.key === 'ArrowDown' && deskScene.style.display === 'none') {
+        transitionToDesk();
+      }
+      // Возврат к компьютеру со стола (стрелка вверх)
+      else if (e.key === 'ArrowUp' && deskScene.style.display === 'flex') {
+        transitionToComputer();
+      }
+    });
+
     // Инициализация при загрузке страницы
     async function init() {
       renderTelescopes();
       updateReceiveButton();
       await loadSignals();
       updateReceiveButton();
+      initPaperControls();
+      
+      // Добавляем подсказку об управлении переходами
+      const computerHint = document.createElement('div');
+      computerHint.className = 'controls-hint';
+      computerHint.style.position = 'fixed';
+      computerHint.style.top = '10px';
+      computerHint.style.bottom = 'auto';
+      computerHint.textContent = 'Нажмите ↓ для перехода к столу';
+      document.body.appendChild(computerHint);
     }
 
     // Обработчики событий
@@ -1481,6 +1673,13 @@
 
     decryptBtn.addEventListener('click', () => {
       decryptSignal();
+    });
+
+    // Обновляем содержимое листка при выборе сигнала в истории
+    historyList.addEventListener('click', () => {
+      if (deskScene.style.display === 'flex') {
+        updatePaperContent();
+      }
     });
 
     // Запускаем инициализацию при загрузке страницы
