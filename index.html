@@ -972,8 +972,7 @@
       // Генерируем сигнал
       currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
       
-      // Уменьшил вероятность криповых сигналов с 25% до 15%
-      creepyActive = Math.random() < 0.15;
+      creepyActive = Math.random() < 0.25;
       
       // Используем неповторяющиеся сигналы
       currentResultSignal = creepyActive
@@ -1078,4 +1077,5 @@
   </script>
 </body>
 </html>
+
 
