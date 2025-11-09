@@ -405,13 +405,19 @@
     // Звуки
     const ambientAudio = new Audio('sound/ambient.mp3');
     ambientAudio.loop = true;
-    ambientAudio.volume = 0.25;
+    ambientAudio.volume = 0.15;
 
     const priemAudio = new Audio('sound/priem-obrabotra.mp3');
     priemAudio.volume = 0.5;
 
     const radiooffAudio = new Audio('sound/radiooff.mp3');
     radiooffAudio.volume = 0.5;
+
+    // Звуки расшифровки
+    const decryptAudio1 = new Audio('sound/random_dechifrator_1.mp3');
+    const decryptAudio2 = new Audio('sound/random_dechifrator_2.mp3');
+    decryptAudio1.volume = 0.5;
+    decryptAudio2.volume = 0.5;
 
     // Данные сигналов (будут загружены из файлов)
     let NORMAL_SIGNALS = [];
@@ -443,11 +449,12 @@
     let creepyActive = false;
     let currentBinarySignal = '';
     let currentResultSignal = '';
+    let currentDecryptAudio = null;
 
     // Функция загрузки файлов
     async function loadSignals() {
       try {
-        loadingStatus.textContent = 'Загрузка системы...';
+        loadingStatus.textContent = 'Загрузка нормальных сигналов...';
         
         // Загрузка normal_signals.txt
         const normalResponse = await fetch('normal_signals.txt');
@@ -457,7 +464,7 @@
           .map(line => line.trim())
           .filter(line => line.length > 0);
 
-        loadingStatus.textContent = 'Загрузка зоны сигналов...';
+        loadingStatus.textContent = 'Загрузка аномальных сигналов...';
         
         // Загрузка creepy_signals.txt
         const creepyResponse = await fetch('creepy_signals.txt');
@@ -760,37 +767,46 @@
     }
 
     // Процесс расшифровки сигнала
-async function decryptSignal() {
-  decryptBtn.disabled = true;
-  
-  // Анимация точек во время очистки от шумов
-  statusText.value = 'Очистка сигнала от шумов';
-  await animateStatusLoading('Очистка сигнала от шумов', 2000);
+    async function decryptSignal() {
+      decryptBtn.disabled = true;
+      
+      // Выбираем случайный звук расшифровки
+      currentDecryptAudio = Math.random() < 0.5 ? decryptAudio1 : decryptAudio2;
+      currentDecryptAudio.currentTime = 0;
+      currentDecryptAudio.play();
+      
+      // Анимация точек во время очистки от шумов
+      statusText.value = 'Очистка сигнала от шумов';
+      await animateStatusLoading('Очистка сигнала от шумов', 2000);
 
-  // Очищаем бинарный код от шумов
-  await cleanBinaryFromNoise(binaryText, binaryText.value);
+      // Очищаем бинарный код от шумов
+      await cleanBinaryFromNoise(binaryText, binaryText.value);
 
-  // Анимация точек во время декодирования
-  statusText.value = 'Декодирование сигнала';
-  await animateStatusLoading('Декодирование сигнала', 2000);
-  
-  // Выводим результат
-  await animateText(resultText, currentResultSignal, creepyActive);
+      // Анимация точек во время декодирования
+      statusText.value = 'Декодирование сигнала';
+      await animateStatusLoading('Декодирование сигнала', 2000);
+      
+      // Останавливаем звук расшифровки перед выводом результата
+      currentDecryptAudio.pause();
+      currentDecryptAudio.currentTime = 0;
+      
+      // Выводим результат
+      await animateText(resultText, currentResultSignal, creepyActive);
 
-  // Завершение расшифровки
-  if (creepyActive) {
-    statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
-    breakRandomTelescope();
-  } else {
-    statusText.value = 'Расшифровка завершена.';
-  }
+      // Завершение расшифровки
+      if (creepyActive) {
+        statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
+        breakRandomTelescope();
+      } else {
+        statusText.value = 'Расшифровка завершена.';
+      }
 
-  // Добавляем в историю
-  addSignalToHistory(currentBinarySignal, currentResultSignal, creepyActive);
-  
-  // Обновляем состояние кнопок
-  updateReceiveButton();
-}
+      // Добавляем в историю
+      addSignalToHistory(currentBinarySignal, currentResultSignal, creepyActive);
+      
+      // Обновляем состояние кнопок
+      updateReceiveButton();
+    }
 
     // Приём сигнала
     async function receiveSignal() {
@@ -921,7 +937,3 @@ async function decryptSignal() {
   </script>
 </body>
 </html>
-
-
-
-
