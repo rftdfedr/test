@@ -653,6 +653,29 @@
       });
     }
 
+    // Очистка бинарного кода от шумов
+    function cleanBinaryFromNoise(element, binaryStr) {
+      return new Promise(resolve => {
+        let i = 0;
+        const cleanBinary = binaryStr.replace(/[^01]/g, ''); // Убираем все символы кроме 0 и 1
+        
+        function step() {
+          if (i >= cleanBinary.length) {
+            resolve();
+            return;
+          }
+          // Заменяем текущий символ на чистый
+          const currentText = element.value;
+          const newText = cleanBinary.substring(0, i + 1);
+          element.value = newText;
+          element.scrollTop = element.scrollHeight;
+          i++;
+          setTimeout(step, 20);
+        }
+        step();
+      });
+    }
+
     // Анимация починки телескопа
     function animateConnectionLoading(telescopeIndex) {
       const frames = [
@@ -739,15 +762,14 @@
     // Процесс расшифровки сигнала
     async function decryptSignal() {
       decryptBtn.disabled = true;
-      statusText.value = 'Начало расшифровки...';
+      statusText.value = 'Очистка сигнала от шумов...';
 
-      // Анимация расшифровки
-      await animateStatusLoading('Расшифровка сигнала', 2000);
+      // Очищаем бинарный код от шумов
+      await cleanBinaryFromNoise(binaryText, binaryText.value);
 
-      // Очищаем результат перед выводом
-      resultText.value = '';
-
-      // Выводим расшифрованный текст
+      statusText.value = 'Декодирование сигнала...';
+      
+      // Выводим результат
       await animateText(resultText, currentResultSignal, creepyActive);
 
       // Завершение расшифровки
@@ -763,7 +785,6 @@
       
       // Обновляем состояние кнопок
       updateReceiveButton();
-      decryptBtn.disabled = true;
     }
 
     // Приём сигнала
@@ -797,19 +818,16 @@
         ? CREEPY_SIGNALS[Math.floor(Math.random() * CREEPY_SIGNALS.length)]
         : NORMAL_SIGNALS[Math.floor(Math.random() * NORMAL_SIGNALS.length)];
 
-      // Получение сигнала
+      // Получение сигнала с шумом
       await Promise.all([
         animateStatusLoading('Получение сигнала'),
         animateBinaryWithNoise(binaryText, currentBinarySignal)
       ]);
 
-      // Очищаем бинарный сигнал от шума
-      await animateText(binaryText, currentBinarySignal);
-
       priemAudio.pause();
 
       // Активируем кнопку расшифровки
-      statusText.value = 'Сигнал получен. Готов к расшифровке.';
+      statusText.value = 'Сигнал получен. Ожидание расшифровки...';
       decryptBtn.disabled = false;
       
       // Обновляем состояние кнопки приёма
@@ -850,7 +868,7 @@
     function showSignal(id) {
       const signal = signalHistory.find(s => s.id === id);
       if (!signal) return;
-      statusText.value = 'Сигнал получен.';
+      statusText.value = 'Сигнал из истории.';
       binaryText.value = signal.binary;
       resultText.value = signal.result;
       decryptBtn.disabled = true; // Блокируем кнопку расшифровки при просмотре истории
