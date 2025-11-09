@@ -457,18 +457,19 @@
     /* Дневное освещение */
     .desk-daytime {
       background: 
-        radial-gradient(circle at 20% 30%, rgba(255, 255, 200, 0.4) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 255, 220, 0.3) 0%, transparent 40%),
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 200, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 220, 0.2) 0%, transparent 40%),
         linear-gradient(to bottom, #4a3720 0%, #2a1e0f 100%);
     }
 
-    /* Ночное освещение - в 3 раза темнее */
+    /* Ночное освещение с фонариком */
     .desk-nighttime {
       background: 
-        linear-gradient(to bottom, #0a0600 0%, #050300 100%);
+        radial-gradient(circle at 50% 50%, rgba(255, 207, 64, 0.4) 0%, rgba(255, 207, 64, 0.1) 30%, transparent 70%),
+        linear-gradient(to bottom, #1a1208 0%, #0a0600 100%);
     }
 
-    /* Эффект фонарика для стола */
+    /* Эффект фонарика */
     .flashlight-effect {
       position: absolute;
       top: 0;
@@ -477,31 +478,12 @@
       height: 100%;
       background: 
         radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-          rgba(255, 207, 64, 0.4) 0%, 
-          rgba(255, 207, 64, 0.1) 15%, 
-          transparent 40%);
+          rgba(255, 207, 64, 0.3) 0%, 
+          rgba(255, 207, 64, 0.1) 20%, 
+          transparent 60%);
       pointer-events: none;
       z-index: 1;
       display: none;
-      mix-blend-mode: plus-lighter;
-    }
-
-    /* Эффект фонарика для бумаги */
-    .paper-flashlight {
-      position: absolute;
-      width: 500px;
-      height: 700px;
-      background: 
-        radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-          rgba(255, 255, 255, 0.8) 0%,
-          rgba(255, 255, 255, 0.3) 20%,
-          rgba(255, 255, 255, 0.1) 40%,
-          transparent 60%);
-      pointer-events: none;
-      z-index: 3;
-      display: none;
-      mix-blend-mode: overlay;
-      border-radius: 2px;
     }
 
     /* Листок бумаги в клеточку */
@@ -520,7 +502,7 @@
         0 0 30px rgba(0, 0, 0, 0.4),
         0 0 15px rgba(255, 207, 64, 0.2);
       cursor: grab;
-      transition: all 0.3s ease;
+      transition: box-shadow 0.3s;
       padding: 40px 30px 30px 30px;
       font-family: 'Courier New', monospace;
       color: #333;
@@ -529,21 +511,6 @@
       overflow: auto;
       user-select: text;
       z-index: 2;
-    }
-
-    /* Темный режим для бумаги ночью */
-    .paper-dark {
-      background: 
-        linear-gradient(90deg, transparent 24px, #555 25px, #555 26px, transparent 27px),
-        linear-gradient(#444 .1em, transparent .1em);
-      background-size: 100% 1.5em;
-      background-position: 0 1.2em;
-      background-color: #2a2a2a;
-      border: 2px solid #666;
-      color: #888;
-      box-shadow: 
-        0 0 20px rgba(0, 0, 0, 0.8),
-        0 0 10px rgba(255, 207, 64, 0.1);
     }
 
     .paper:active {
@@ -559,12 +526,6 @@
       outline: none;
       white-space: pre-wrap;
       word-wrap: break-word;
-      transition: color 0.3s ease;
-    }
-
-    /* Темный текст для ночи */
-    .paper-content-dark {
-      color: #aaa;
     }
 
     /* Подсказки управления */
@@ -580,14 +541,6 @@
       z-index: 1001;
       background: rgba(0, 0, 0, 0.7);
       padding: 10px;
-      transition: all 0.3s ease;
-    }
-
-    /* Темный режим для подсказки */
-    .controls-hint-dark {
-      background: rgba(0, 0, 0, 0.9);
-      color: #ffd85c;
-      text-shadow: 0 0 5px rgba(255, 216, 92, 0.5);
     }
 
     /* Кнопки перехода */
@@ -866,7 +819,6 @@
   <!-- Сцена стола -->
   <div id="desk-scene">
     <div class="flashlight-effect" id="flashlight"></div>
-    <div class="paper-flashlight" id="paper-flashlight"></div>
     <div class="paper">
       <div class="paper-content" contenteditable="true">
 ╔═══════════════════════════════════════╗
@@ -967,7 +919,6 @@
     const paper = document.querySelector('.paper');
     const paperContent = document.querySelector('.paper-content');
     const flashlight = document.getElementById('flashlight');
-    const paperFlashlight = document.getElementById('paper-flashlight');
     const deskHint = document.getElementById('desk-hint');
     const transitionOverlay = document.getElementById('transition-overlay');
     const toDeskBtn = document.getElementById('to-desk-btn');
@@ -999,33 +950,22 @@
       return hours >= 6 && hours < 20 ? 'day' : 'night';
     }
 
-    // Функция обновления освещения стола и бумаги
+    // Функция обновления освещения стола
     function updateDeskLighting() {
       const timeOfDay = getTimeOfDay();
       
       // Убираем все классы освещения
       deskScene.classList.remove('desk-daytime', 'desk-nighttime');
-      paper.classList.remove('paper-dark');
-      paperContent.classList.remove('paper-content-dark');
-      deskHint.classList.remove('controls-hint-dark');
       
       if (timeOfDay === 'day') {
         // Дневное освещение
         deskScene.classList.add('desk-daytime');
         flashlight.style.display = 'none';
-        paperFlashlight.style.display = 'none';
         deskHint.textContent = 'Перемещайте листок мышью • Редактируйте текст кликом • Нажмите ↑ для возврата к компьютеру';
       } else {
-        // Ночное освещение - в 3 раза темнее
+        // Ночное освещение с фонариком
         deskScene.classList.add('desk-nighttime');
         flashlight.style.display = 'block';
-        paperFlashlight.style.display = 'block';
-        
-        // Темный режим для бумаги
-        paper.classList.add('paper-dark');
-        paperContent.classList.add('paper-content-dark');
-        deskHint.classList.add('controls-hint-dark');
-        
         deskHint.textContent = 'Ночной режим • Фонарик следует за курсором • Нажмите ↑ для возврата к компьютеру';
       }
     }
@@ -1035,24 +975,8 @@
       if (getTimeOfDay() === 'night' && deskScene.style.display === 'flex') {
         const x = (e.clientX / window.innerWidth) * 100;
         const y = (e.clientY / window.innerHeight) * 100;
-        
-        // Обновляем позицию фонарика для стола
         flashlight.style.setProperty('--mouse-x', `${x}%`);
         flashlight.style.setProperty('--mouse-y', `${y}%`);
-        
-        // Обновляем позицию фонарика для бумаги
-        const paperRect = paper.getBoundingClientRect();
-        const paperX = ((e.clientX - paperRect.left) / paperRect.width) * 100;
-        const paperY = ((e.clientY - paperRect.top) / paperRect.height) * 100;
-        
-        paperFlashlight.style.setProperty('--mouse-x', `${paperX}%`);
-        paperFlashlight.style.setProperty('--mouse-y', `${paperY}%`);
-        
-        // Синхронизируем позицию бумажного фонарика с бумагой
-        paperFlashlight.style.left = paper.style.left;
-        paperFlashlight.style.top = paper.style.top;
-        paperFlashlight.style.width = paper.style.width;
-        paperFlashlight.style.height = paper.style.height;
       }
     }
 
@@ -1577,6 +1501,7 @@
       binaryText.value = '';
       resultText.value = '';
       decryptBtn.disabled = true;
+    });
 
     // Управление листком бумаги (2D перемещение)
     function initPaperControls() {
@@ -1584,12 +1509,6 @@
       paper.style.left = '50%';
       paper.style.top = '50%';
       paper.style.transform = 'translate(-50%, -50%)';
-      
-      // Синхронизируем позицию бумажного фонарика
-      paperFlashlight.style.left = paper.style.left;
-      paperFlashlight.style.top = paper.style.top;
-      paperFlashlight.style.width = paper.style.width;
-      paperFlashlight.style.height = paper.style.height;
       
       // Обработчики событий для перемещения
       paper.addEventListener('mousedown', startDrag);
@@ -1641,10 +1560,6 @@
       paper.style.left = `${initialX + deltaX}px`;
       paper.style.top = `${initialY + deltaY}px`;
       
-      // Синхронизируем позицию бумажного фонарика
-      paperFlashlight.style.left = paper.style.left;
-      paperFlashlight.style.top = paper.style.top;
-      
       e.preventDefault();
     }
 
@@ -1660,10 +1575,6 @@
       
       paper.style.left = `${initialX + deltaX}px`;
       paper.style.top = `${initialY + deltaY}px`;
-      
-      // Синхронизируем позицию бумажного фонарика
-      paperFlashlight.style.left = paper.style.left;
-      paperFlashlight.style.top = paper.style.top;
       
       e.preventDefault();
     }
@@ -1805,4 +1716,3 @@
   </script>
 </body>
 </html>
-
