@@ -761,31 +761,33 @@
 
     // Процесс расшифровки сигнала
     async function decryptSignal() {
-      decryptBtn.disabled = true;
-      statusText.value = 'Очистка сигнала от шумов...';
+  decryptBtn.disabled = true;
+  statusText.value = 'Очистка сигнала от шумов...';
 
-      // Очищаем бинарный код от шумов
-      await cleanBinaryFromNoise(binaryText, binaryText.value);
+  // Очищаем бинарный код от шумов
+  await cleanBinaryFromNoise(binaryText, binaryText.value);
 
-      statusText.value = 'Декодирование сигнала...';
-      
-      // Выводим результат
-      await animateText(resultText, currentResultSignal, creepyActive);
+  // Анимация точек во время декодирования
+  statusText.value = 'Декодирование сигнала';
+  await animateStatusLoading('Декодирование сигнала', 2000);
+  
+  // Выводим результат
+  await animateText(resultText, currentResultSignal, creepyActive);
 
-      // Завершение расшифровки
-      if (creepyActive) {
-        statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
-        breakRandomTelescope();
-      } else {
-        statusText.value = 'Расшифровка завершена.';
-      }
+  // Завершение расшифровки
+  if (creepyActive) {
+    statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
+    breakRandomTelescope();
+  } else {
+    statusText.value = 'Расшифровка завершена.';
+  }
 
-      // Добавляем в историю
-      addSignalToHistory(currentBinarySignal, currentResultSignal, creepyActive);
-      
-      // Обновляем состояние кнопок
-      updateReceiveButton();
-    }
+  // Добавляем в историю
+  addSignalToHistory(currentBinarySignal, currentResultSignal, creepyActive);
+  
+  // Обновляем состояние кнопок
+  updateReceiveButton();
+}
 
     // Приём сигнала
     async function receiveSignal() {
@@ -916,3 +918,4 @@
   </script>
 </body>
 </html>
+
