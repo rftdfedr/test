@@ -447,7 +447,7 @@
     // Функция загрузки файлов
     async function loadSignals() {
       try {
-        loadingStatus.textContent = 'Загрузка нормальных сигналов...';
+        loadingStatus.textContent = 'Загрузка системы...';
         
         // Загрузка normal_signals.txt
         const normalResponse = await fetch('normal_signals.txt');
@@ -457,7 +457,7 @@
           .map(line => line.trim())
           .filter(line => line.length > 0);
 
-        loadingStatus.textContent = 'Загрузка аномальных сигналов...';
+        loadingStatus.textContent = 'Загрузка зоны сигналов...';
         
         // Загрузка creepy_signals.txt
         const creepyResponse = await fetch('creepy_signals.txt');
@@ -921,5 +921,6 @@ async function decryptSignal() {
   </script>
 </body>
 </html>
+
 
 
