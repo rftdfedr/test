@@ -121,6 +121,64 @@
       text-shadow: none;
     }
 
+    /* Переключатель фильтра */
+    .filter-switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+      padding: 10px;
+      border: 1px solid var(--soft-yellow);
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--dark-border);
+      transition: .4s;
+      border: 1px solid var(--soft-yellow);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 3px;
+      background-color: var(--soft-yellow);
+      transition: .4s;
+    }
+    input:checked + .slider {
+      background-color: var(--soft-yellow);
+    }
+    input:checked + .slider:before {
+      background-color: var(--dark-bg);
+      transform: translateX(26px);
+    }
+    .filter-status {
+      font-size: 14px;
+      color: var(--soft-yellow);
+    }
+    .filter-status.active {
+      color: #ffd85c;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ffd85c;
+    }
+
     /* Таблица радиотелескопов */
     table {
       width: 100%;
@@ -371,6 +429,15 @@
     <div id="signals" class="tab-content">
       <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
       <button id="receive-btn" disabled>Загрузка сигналов...</button>
+      
+      <div class="filter-switch">
+        <label class="switch">
+          <input type="checkbox" id="filter-toggle">
+          <span class="slider"></span>
+        </label>
+        <span id="filter-status" class="filter-status">Фильтр частот: ВЫКЛ</span>
+      </div>
+      
       <div id="loading-status" class="loading"></div>
     </div>
     <div id="telescopes" class="tab-content" style="display:none;">
@@ -443,6 +510,8 @@
     const deleteButton = document.getElementById('delete-button');
     const loadingStatus = document.getElementById('loading-status');
     const decryptBtn = document.getElementById('decrypt-btn');
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterStatus = document.getElementById('filter-status');
 
     // История сигналов
     let signalHistory = [];
@@ -450,6 +519,37 @@
     let currentBinarySignal = '';
     let currentResultSignal = '';
     let currentDecryptAudio = null;
+
+    // Отслеживание использованных сигналов
+    let usedNormalSignals = new Set();
+    let usedCreepySignals = new Set();
+
+    // Функция для получения случайного неповторяющегося сигнала
+    function getRandomSignal(signalArray, usedSet) {
+        // Если фильтр выключен, возвращаем любой случайный сигнал
+        if (!filterToggle.checked) {
+            return signalArray[Math.floor(Math.random() * signalArray.length)];
+        }
+        
+        // Если все сигналы использованы, сбрасываем счётчик
+        if (usedSet.size >= signalArray.length) {
+            usedSet.clear();
+        }
+        
+        let availableSignals = signalArray.filter((_, index) => !usedSet.has(index));
+        
+        if (availableSignals.length === 0) {
+            // Если почему-то нет доступных сигналов, сбрасываем и используем любой
+            usedSet.clear();
+            availableSignals = [...signalArray];
+        }
+        
+        const randomIndex = Math.floor(Math.random() * availableSignals.length);
+        const signalIndex = signalArray.indexOf(availableSignals[randomIndex]);
+        
+        usedSet.add(signalIndex);
+        return availableSignals[randomIndex];
+    }
 
     // Функция загрузки файлов
     async function loadSignals() {
@@ -502,6 +602,19 @@
         statusText.value = 'Система готова к работе. (резервный режим)';
       }
     }
+
+    // Обработчик переключателя фильтра
+    filterToggle.addEventListener('change', function() {
+        if (this.checked) {
+            filterStatus.textContent = 'Фильтр частот: ВКЛ';
+            filterStatus.classList.add('active');
+            statusText.value = 'Фильтр активирован. Повторяющиеся частоты блокируются.';
+        } else {
+            filterStatus.textContent = 'Фильтр частот: ВЫКЛ';
+            filterStatus.classList.remove('active');
+            statusText.value = 'Фильтр деактивирован. Все частоты доступны.';
+        }
+    });
 
     // Эффект Залго (упрощённый)
     function zalgo(text, intensity=5) {
@@ -834,10 +947,14 @@
 
       // Генерируем сигнал
       currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
-      creepyActive = Math.random() < 0.25;
+      
+      // Уменьшил вероятность криповых сигналов с 25% до 15%
+      creepyActive = Math.random() < 0.15;
+      
+      // Используем неповторяющиеся сигналы
       currentResultSignal = creepyActive
-        ? CREEPY_SIGNALS[Math.floor(Math.random() * CREEPY_SIGNALS.length)]
-        : NORMAL_SIGNALS[Math.floor(Math.random() * NORMAL_SIGNALS.length)];
+        ? getRandomSignal(CREEPY_SIGNALS, usedCreepySignals)
+        : getRandomSignal(NORMAL_SIGNALS, usedNormalSignals);
 
       // Получение сигнала с шумом
       await Promise.all([
