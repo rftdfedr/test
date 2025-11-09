@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Приём космического сигнала</title>
   <style>
     /* Мягкий жёлтый цвет #FFCF40 */
@@ -22,6 +23,7 @@
       color: var(--soft-yellow);
       font-family: 'Courier New', Courier, monospace;
       display: flex;
+      flex-direction: column;
       height: 100vh;
       overflow: hidden;
       position: relative;
@@ -29,12 +31,13 @@
 
     /* Левая панель */
     #left-panel {
-      width: 700px;
+      width: 100%;
       background: var(--dark-bg);
       display: flex;
       flex-direction: column;
-      border-right: 2px solid var(--soft-yellow);
+      border-bottom: 2px solid var(--soft-yellow);
       box-sizing: border-box;
+      max-height: 50vh;
     }
 
     /* Вкладки */
@@ -57,6 +60,7 @@
         0 0 10px var(--soft-yellow-glow),
         0 0 20px var(--soft-yellow-glow);
       position: relative;
+      font-size: 14px;
     }
     .tab.active {
       border-bottom-color: #ffd85c;
@@ -83,7 +87,7 @@
     /* Контент вкладок */
     .tab-content {
       flex: 1;
-      padding: 20px 30px;
+      padding: 15px;
       overflow-y: auto;
       background: var(--dark-bg);
       box-shadow:
@@ -123,15 +127,16 @@
     /* Контейнер для кнопки и переключателя */
     .controls-row {
       display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-top: 20px;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
     }
 
     /* Переключатель фильтра */
     .filter-container {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       padding: 10px 15px;
       border: 2px solid var(--soft-yellow);
@@ -193,28 +198,6 @@
       text-shadow: 0 0 10px #ffd85c;
     }
 
-    /* Спектрограмма */
-    #spectrogram {
-      width: 100%;
-      height: 80px;
-      background: var(--dark-bg);
-      border: 1px solid var(--soft-yellow);
-      margin-top: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .spectrum-bar {
-      position: absolute;
-      bottom: 0;
-      width: 4px;
-      background: var(--soft-yellow);
-      transition: height 0.1s;
-    }
-    .spectrum-bar.creepy {
-      background: var(--creepy-red);
-      box-shadow: 0 0 10px var(--creepy-red-glow);
-    }
-
     /* Таблица радиотелескопов */
     table {
       width: 100%;
@@ -225,10 +208,10 @@
       margin-top: 10px;
     }
     th, td {
-      padding: 10px 8px;
+      padding: 8px 6px;
       border-bottom: 1px solid var(--dark-border);
       text-align: left;
-      font-size: 14px;
+      font-size: 12px;
     }
     th {
       background: var(--dark-bg-2);
@@ -259,7 +242,7 @@
       color: var(--soft-yellow);
       padding: 6px 12px;
       font-family: 'Courier New', Courier, monospace;
-      font-size: 13px;
+      font-size: 11px;
       cursor: pointer;
       text-shadow:
         0 0 5px var(--soft-yellow-glow);
@@ -281,7 +264,7 @@
     /* Кастомный список истории сигналов */
     #history-list {
       width: 100%;
-      height: 300px;
+      height: 200px;
       background: transparent;
       border: 2px solid transparent;
       border-radius: 3px;
@@ -327,7 +310,7 @@
       background: var(--dark-bg);
       display: flex;
       flex-direction: column;
-      padding: 15px 20px;
+      padding: 15px;
       color: var(--soft-yellow);
       font-family: 'Courier New', Courier, monospace;
       font-size: 14px;
@@ -358,10 +341,10 @@
       overflow-y: hidden;
     }
     #binary-text {
-      height: 140px;
+      height: 120px;
     }
     #result-text {
-      height: 100px;
+      height: 200px;
     }
     .creepy {
       color: var(--creepy-red);
@@ -376,7 +359,7 @@
     #decrypt-btn {
       align-self: center;
       margin: 10px 0;
-      width: 200px;
+      width: 100%;
     }
 
     /* Усиленный глич эффект (искажение кадра) */
@@ -453,6 +436,55 @@
       text-align: center;
       padding: 20px;
     }
+
+    /* Медиа-запросы для адаптации под разные экраны */
+    @media (min-width: 768px) {
+      body {
+        flex-direction: row;
+      }
+      
+      #left-panel {
+        width: 50%;
+        max-height: 100vh;
+        border-right: 2px solid var(--soft-yellow);
+        border-bottom: none;
+      }
+      
+      .controls-row {
+        flex-direction: row;
+      }
+      
+      #decrypt-btn {
+        width: 200px;
+      }
+      
+      #binary-text {
+        height: 140px;
+      }
+      
+      #result-text {
+        height: 350px;
+      }
+      
+      #history-list {
+        height: 300px;
+      }
+      
+      th, td {
+        font-size: 14px;
+        padding: 10px 8px;
+      }
+      
+      .tab {
+        font-size: 16px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      #left-panel {
+        width: 700px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -477,9 +509,6 @@
           <div class="filter-status" id="filter-status">ВЫКЛ</div>
         </div>
       </div>
-      
-      <!-- Спектрограмма -->
-      <div id="spectrogram"></div>
       
       <div id="loading-status" class="loading"></div>
     </div>
@@ -515,7 +544,7 @@
     // Звуки
     const ambientAudio = new Audio('sound/ambient.mp3');
     ambientAudio.loop = true;
-    ambientAudio.volume = 0.15;
+    ambientAudio.volume = 0.30;
 
     const priemAudio = new Audio('sound/priem-obrabotra.mp3');
     priemAudio.volume = 0.5;
@@ -555,7 +584,6 @@
     const decryptBtn = document.getElementById('decrypt-btn');
     const filterToggle = document.getElementById('filter-toggle');
     const filterStatus = document.getElementById('filter-status');
-    const spectrogram = document.getElementById('spectrogram');
 
     // История сигналов
     let signalHistory = [];
@@ -570,63 +598,6 @@
 
     // Флаг для отслеживания процесса расшифровки
     let isDecrypting = false;
-
-    // Переменные для спектрограммы
-    let spectrumInterval;
-    let spectrumBars = [];
-
-    // Функция для создания спектрограммы
-    function createSpectrogram() {
-        spectrogram.innerHTML = '';
-        spectrumBars = [];
-        const barCount = 50;
-        const width = spectrogram.clientWidth;
-        const barWidth = width / barCount;
-        
-        for (let i = 0; i < barCount; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'spectrum-bar';
-            bar.style.left = (i * barWidth) + 'px';
-            bar.style.height = '0px';
-            spectrogram.appendChild(bar);
-            spectrumBars.push(bar);
-        }
-    }
-
-    // Функция для запуска спектрограммы
-    function startSpectrogram(isCreepy = false) {
-        clearInterval(spectrumInterval);
-        
-        spectrumInterval = setInterval(() => {
-            spectrumBars.forEach((bar, index) => {
-                // Создаем псевдо-случайные значения для эффекта спектрограммы
-                const baseHeight = Math.sin(Date.now() * 0.01 + index * 0.3) * 20 + 30;
-                const randomVariation = Math.random() * 15;
-                const finalHeight = Math.max(5, baseHeight + randomVariation);
-                
-                bar.style.height = finalHeight + 'px';
-                
-                if (isCreepy) {
-                    bar.classList.add('creepy');
-                    // Добавляем мерцание для криповых сигналов
-                    bar.style.opacity = 0.7 + Math.random() * 0.3;
-                } else {
-                    bar.classList.remove('creepy');
-                    bar.style.opacity = 1;
-                }
-            });
-        }, 100);
-    }
-
-    // Функция для остановки спектрограммы
-    function stopSpectrogram() {
-        clearInterval(spectrumInterval);
-        spectrumBars.forEach(bar => {
-            bar.style.height = '0px';
-            bar.style.opacity = '1';
-            bar.classList.remove('creepy');
-        });
-    }
 
     // Функция для получения случайного неповторяющегося сигнала
     function getRandomSignal(signalArray, usedSet) {
@@ -830,45 +801,45 @@
       });
     }
 
-    // Анимация текста по символам с задержкой (эффект печати) - поддержка многострочности
-    function animateText(element, text, creepy = false) {
-      return new Promise(resolve => {
-        element.value = '';
-        let i = 0;
-        const lines = text.split('\\n'); // Разделяем по \n
-        let currentLine = 0;
-        let currentChar = 0;
-        
-        function step() {
-          if (currentLine >= lines.length) {
-            resolve();
-            return;
-          }
-          
-          if (currentChar < lines[currentLine].length) {
-            // Добавляем символ к текущей строке
-            element.value += lines[currentLine][currentChar];
-            currentChar++;
-          } else {
-            // Переходим на новую строку
-            element.value += '\n';
-            currentLine++;
-            currentChar = 0;
-          }
-          
-          if (creepy) {
-            element.style.color = 'var(--creepy-red)';
-          } else {
-            element.style.color = 'var(--soft-yellow)';
-          }
-          element.scrollTop = element.scrollHeight;
-          
-          setTimeout(step, 10); // Увеличил скорость для ASCII-артов
-        }
-        
-        step();
-      });
+    // Анимация текста по символам с задержкой (эффект печати)
+function animateText(element, text, creepy = false) {
+  return new Promise(resolve => {
+    element.value = '';
+    let i = 0;
+    const lines = text.split('\\n'); // Разделяем по \n
+    let currentLine = 0;
+    let currentChar = 0;
+    
+    function step() {
+      if (currentLine >= lines.length) {
+        resolve();
+        return;
+      }
+      
+      if (currentChar < lines[currentLine].length) {
+        // Добавляем символ к текущей строке
+        element.value += lines[currentLine][currentChar];
+        currentChar++;
+      } else {
+        // Переходим на новую строку
+        element.value += '\n';
+        currentLine++;
+        currentChar = 0;
+      }
+      
+      if (creepy) {
+        element.style.color = 'var(--creepy-red)';
+      } else {
+        element.style.color = 'var(--soft-yellow)';
+      }
+      element.scrollTop = element.scrollHeight;
+      
+      setTimeout(step, 10); // Увеличил скорость для ASCII-артов
     }
+    
+    step();
+  });
+}
 
     // Анимация бинарного сигнала с шумом (добавление случайных символов после битов)
     function animateBinaryWithNoise(element, binaryStr) {
@@ -927,7 +898,7 @@
         "▓ ▓ ▓ ▓"
       ];
       const telescope = TELESCOPES[telescopeIndex];
-      let repeatCount = Math.floor(Math.random() * 5) + 1; // от 1 до 5 повторов
+      let repeatCount = Math.floor(Math.random() * 3) + 1; // от 1 до 3 повторов
       let frameIndex = 0;
       let repeatsDone = 0;
 
@@ -1072,7 +1043,7 @@
       // Генерируем сигнал
       currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
       
-      creepyActive = Math.random() < 1;
+      creepyActive = Math.random() < 0.3;
       
       // Используем неповторяющиеся сигналы
       currentResultSignal = creepyActive
@@ -1177,11 +1148,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
