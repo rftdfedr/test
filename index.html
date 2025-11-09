@@ -760,9 +760,12 @@
     }
 
     // Процесс расшифровки сигнала
-    async function decryptSignal() {
+async function decryptSignal() {
   decryptBtn.disabled = true;
-  statusText.value = 'Очистка сигнала от шумов...';
+  
+  // Анимация точек во время очистки от шумов
+  statusText.value = 'Очистка сигнала от шумов';
+  await animateStatusLoading('Очистка сигнала от шумов', 2000);
 
   // Очищаем бинарный код от шумов
   await cleanBinaryFromNoise(binaryText, binaryText.value);
@@ -829,7 +832,7 @@
       priemAudio.pause();
 
       // Активируем кнопку расшифровки
-      statusText.value = 'Сигнал получен. Ожидание расшифровки...';
+      statusText.value = 'Сигнал получен. Ожидание расшифровки.';
       decryptBtn.disabled = false;
       
       // Обновляем состояние кнопки приёма
@@ -918,4 +921,5 @@
   </script>
 </body>
 </html>
+
 
