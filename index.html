@@ -748,27 +748,44 @@
     }
 
     // Анимация текста по символам с задержкой (эффект печати)
-    function animateText(element, text, creepy = false) {
-      return new Promise(resolve => {
-        element.value = '';
-        let i = 0;
-        const interval = setInterval(() => {
-          if (i >= text.length) {
-            clearInterval(interval);
-            resolve();
-            return;
-          }
-          element.value += text[i];
-          if (creepy) {
-            element.style.color = 'var(--creepy-red)';
-          } else {
-            element.style.color = 'var(--soft-yellow)';
-          }
-          element.scrollTop = element.scrollHeight;
-          i++;
-        }, 30);
-      });
+function animateText(element, text, creepy = false) {
+  return new Promise(resolve => {
+    element.value = '';
+    let i = 0;
+    const lines = text.split('\\n'); // Разделяем по \n
+    let currentLine = 0;
+    let currentChar = 0;
+    
+    function step() {
+      if (currentLine >= lines.length) {
+        resolve();
+        return;
+      }
+      
+      if (currentChar < lines[currentLine].length) {
+        // Добавляем символ к текущей строке
+        element.value += lines[currentLine][currentChar];
+        currentChar++;
+      } else {
+        // Переходим на новую строку
+        element.value += '\n';
+        currentLine++;
+        currentChar = 0;
+      }
+      
+      if (creepy) {
+        element.style.color = 'var(--creepy-red)';
+      } else {
+        element.style.color = 'var(--soft-yellow)';
+      }
+      element.scrollTop = element.scrollHeight;
+      
+      setTimeout(step, 10); // Увеличил скорость для ASCII-артов
     }
+    
+    step();
+  });
+}
 
     // Анимация бинарного сигнала с шумом (добавление случайных символов после битов)
     function animateBinaryWithNoise(element, binaryStr) {
@@ -1077,5 +1094,6 @@
   </script>
 </body>
 </html>
+
 
 
