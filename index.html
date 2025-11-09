@@ -14,6 +14,8 @@
       --dark-bg: #000000;
       --dark-bg-2: #331f00;
       --dark-border: #664d00;
+      --paper-color: #f5e9c9;
+      --paper-border: #8b7c5a;
     }
 
     /* Общие настройки */
@@ -27,6 +29,166 @@
       height: 100vh;
       overflow: hidden;
       position: relative;
+      perspective: 1000px;
+    }
+
+    /* Контейнер для 3D сцены */
+    .scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Вид компьютера */
+    .computer-view {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      backface-visibility: hidden;
+    }
+
+    /* Вид стола */
+    .desk-view {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      backface-visibility: hidden;
+      transform: rotateX(90deg);
+    }
+
+    /* Листок с правилами */
+    .rules-paper {
+      width: 80%;
+      max-width: 600px;
+      background-color: var(--paper-color);
+      border: 2px solid var(--paper-border);
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(139, 124, 90, 0.2);
+      position: relative;
+      transform: rotate(-2deg);
+      color: #5a4a3a;
+      font-family: 'Georgia', serif;
+      line-height: 1.6;
+    }
+
+    .rules-paper::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        linear-gradient(90deg, transparent 95%, rgba(139, 124, 90, 0.1) 100%),
+        linear-gradient(rgba(139, 124, 90, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+      border-radius: 6px;
+    }
+
+    .rules-header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--paper-border);
+      padding-bottom: 15px;
+    }
+
+    .rules-header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #3a2e1e;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .rules-content {
+      font-size: 16px;
+    }
+
+    .rules-section {
+      margin-bottom: 20px;
+    }
+
+    .rules-section h2 {
+      font-size: 18px;
+      color: #4a3a2a;
+      margin-bottom: 10px;
+      border-left: 3px solid #8b7c5a;
+      padding-left: 10px;
+    }
+
+    .rules-list {
+      margin: 0;
+      padding-left: 25px;
+    }
+
+    .rules-list li {
+      margin-bottom: 8px;
+    }
+
+    .warning {
+      background: rgba(255, 51, 0, 0.1);
+      border-left: 3px solid var(--creepy-red);
+      padding: 10px 15px;
+      margin: 15px 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Кнопки перехода */
+    .view-toggle {
+      position: absolute;
+      background: rgba(255, 207, 64, 0.2);
+      border: 2px solid var(--soft-yellow);
+      color: var(--soft-yellow);
+      padding: 15px 25px;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      text-shadow: 0 0 10px var(--soft-yellow-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .view-toggle:hover {
+      background: rgba(255, 207, 64, 0.4);
+      transform: scale(1.05);
+    }
+
+    .view-toggle.down {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .view-toggle.up {
+      top: 20px;
+      right: 20px;
+    }
+
+    .arrow {
+      font-size: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .view-toggle:hover .arrow {
+      transform: translateY(3px);
+    }
+
+    .view-toggle.up:hover .arrow {
+      transform: translateY(-3px);
     }
 
     /* Левая панель */
@@ -485,59 +647,194 @@
         width: 700px;
       }
     }
+
+    /* Анимации для 3D перехода */
+    @keyframes rotateToDesk {
+      0% {
+        transform: rotateX(0deg);
+      }
+      100% {
+        transform: rotateX(-90deg);
+      }
+    }
+
+    @keyframes rotateToComputer {
+      0% {
+        transform: rotateX(90deg);
+      }
+      100% {
+        transform: rotateX(0deg);
+      }
+    }
+
+    .scene.to-desk {
+      animation: rotateToDesk 1.5s forwards;
+    }
+
+    .scene.to-computer {
+      animation: rotateToComputer 1.5s forwards;
+    }
   </style>
 </head>
 <body>
-  <div id="left-panel">
-    <div class="tabs">
-      <div class="tab active" data-tab="signals">Сигналы</div>
-      <div class="tab" data-tab="telescopes">Радиотелескопы</div>
-      <div class="tab" data-tab="history">История сигналов</div>
-    </div>
-    <div id="signals" class="tab-content">
-      <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
+  <div class="scene" id="scene">
+    <!-- Вид компьютера -->
+    <div class="computer-view" id="computer-view">
+      <div id="left-panel">
+        <div class="tabs">
+          <div class="tab active" data-tab="signals">Сигналы</div>
+          <div class="tab" data-tab="telescopes">Радиотелескопы</div>
+          <div class="tab" data-tab="history">История сигналов</div>
+        </div>
+        <div id="signals" class="tab-content">
+          <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
+          
+          <div class="controls-row">
+            <button id="receive-btn" disabled>Загрузка сигналов...</button>
+            
+            <div class="filter-container">
+              <div class="filter-label">Фильтр частот</div>
+              <label class="switch">
+                <input type="checkbox" id="filter-toggle">
+                <span class="slider"></span>
+              </label>
+              <div class="filter-status" id="filter-status">ВЫКЛ</div>
+            </div>
+          </div>
+          
+          <div id="loading-status" class="loading"></div>
+        </div>
+        <div id="telescopes" class="tab-content" style="display:none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Название</th>
+                <th>Статус</th>
+                <th>Соединение</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody id="telescopes-body"></tbody>
+          </table>
+        </div>
+        <div id="history" class="tab-content" style="display:none; flex-direction: column;">
+          <div id="history-list" tabindex="0"></div>
+          <button id="delete-button">Удалить выбранный</button>
+        </div>
+      </div>
+      <div id="right-panel">
+        <textarea id="status-text" readonly></textarea>
+        <textarea id="binary-text" readonly></textarea>
+        <button id="decrypt-btn" disabled>Расшифровать</button>
+        <textarea id="result-text" readonly></textarea>
+      </div>
       
-      <div class="controls-row">
-        <button id="receive-btn" disabled>Загрузка сигналов...</button>
+      <!-- Кнопка перехода на стол -->
+      <button class="view-toggle down" id="to-desk-btn">
+        Посмотреть правила <span class="arrow">↓</span>
+      </button>
+    </div>
+
+    <!-- Вид стола -->
+    <div class="desk-view" id="desk-view">
+      <div class="rules-paper">
+        <div class="rules-header">
+          <h1>ПРАВИЛА СИСТЕМЫ ПРИЁМА СИГНАЛОВ</h1>
+          <p><em>Станция космического мониторинга "ОРИОН"</em></p>
+        </div>
         
-        <div class="filter-container">
-          <div class="filter-label">Фильтр частот</div>
-          <label class="switch">
-            <input type="checkbox" id="filter-toggle">
-            <span class="slider"></span>
-          </label>
-          <div class="filter-status" id="filter-status">ВЫКЛ</div>
+        <div class="rules-content">
+          <div class="rules-section">
+            <h2>🎯 ЦЕЛЬ СИСТЕМЫ</h2>
+            <p>Ваша задача - принимать и расшифровывать космические сигналы, поступающие от радиотелескопов. Определяйте природу сигналов и следите за аномалиями.</p>
+          </div>
+
+          <div class="rules-section">
+            <h2>⚙️ ИНТЕРФЕЙС УПРАВЛЕНИЯ</h2>
+            <ul class="rules-list">
+              <li><strong>Вкладка "Сигналы"</strong> - основной пульт управления приёмом сигналов</li>
+              <li><strong>Вкладка "Радиотелескопы"</strong> - мониторинг состояния оборудования</li>
+              <li><strong>Вкладка "История сигналов"</strong> - архив принятых сообщений</li>
+            </ul>
+          </div>
+
+          <div class="rules-section">
+            <h2>🚀 ПРОЦЕСС РАБОТЫ</h2>
+            <ol class="rules-list">
+              <li>Убедитесь, что все радиотелескопы находятся в режиме "Онлайн"</li>
+              <li>Нажмите кнопку "Принять сигнал" для начала сканирования</li>
+              <li>Дождитесь завершения получения бинарного кода</li>
+              <li>Используйте кнопку "Расшифровать" для декодирования сообщения</li>
+              <li>Анализируйте полученную информацию</li>
+            </ol>
+          </div>
+
+          <div class="rules-section">
+            <h2>⚠️ ВАЖНЫЕ ОСОБЕННОСТИ</h2>
+            <ul class="rules-list">
+              <li>Сигналы бывают нормальные и аномальные</li>
+              <li>Аномальные сигналы могут вызывать сбои в системе</li>
+              <li>Фильтр частот предотвращает повторение одинаковых сигналов</li>
+              <li>Сломанные телескопы требуют переподключения</li>
+            </ul>
+          </div>
+
+          <div class="warning">
+            <strong>ВНИМАНИЕ:</strong> Некоторые сигналы могут содержать опасную информацию. 
+            При обнаружении аномалий немедленно докладывайте главному оператору.
+          </div>
+
+          <div class="rules-section">
+            <h2>🎮 УПРАВЛЕНИЕ</h2>
+            <ul class="rules-list">
+              <li><strong>Мышь</strong> - навигация по интерфейсу</li>
+              <li><strong>Клик</strong> - выбор элементов управления</li>
+              <li><strong>Стрелки перехода</strong> - смена вида между компьютером и столом</li>
+            </ul>
+          </div>
         </div>
       </div>
       
-      <div id="loading-status" class="loading"></div>
+      <!-- Кнопка возврата к компьютеру -->
+      <button class="view-toggle up" id="to-computer-btn">
+        <span class="arrow">↑</span> Вернуться к компьютеру
+      </button>
     </div>
-    <div id="telescopes" class="tab-content" style="display:none;">
-      <table>
-        <thead>
-          <tr>
-            <th>Название</th>
-            <th>Статус</th>
-            <th>Соединение</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody id="telescopes-body"></tbody>
-      </table>
-    </div>
-    <div id="history" class="tab-content" style="display:none; flex-direction: column;">
-      <div id="history-list" tabindex="0"></div>
-      <button id="delete-button">Удалить выбранный</button>
-    </div>
-  </div>
-  <div id="right-panel">
-    <textarea id="status-text" readonly></textarea>
-    <textarea id="binary-text" readonly></textarea>
-    <button id="decrypt-btn" disabled>Расшифровать</button>
-    <textarea id="result-text" readonly></textarea>
   </div>
 
   <script>
+    // Управление 3D переходами
+    const scene = document.getElementById('scene');
+    const computerView = document.getElementById('computer-view');
+    const deskView = document.getElementById('desk-view');
+    const toDeskBtn = document.getElementById('to-desk-btn');
+    const toComputerBtn = document.getElementById('to-computer-btn');
+
+    // Функция перехода к столу
+    function switchToDesk() {
+      scene.classList.remove('to-computer');
+      scene.classList.add('to-desk');
+      setTimeout(() => {
+        computerView.style.display = 'none';
+        deskView.style.display = 'flex';
+      }, 750);
+    }
+
+    // Функция возврата к компьютеру
+    function switchToComputer() {
+      scene.classList.remove('to-desk');
+      scene.classList.add('to-computer');
+      setTimeout(() => {
+        deskView.style.display = 'none';
+        computerView.style.display = 'flex';
+      }, 750);
+    }
+
+    // Обработчики событий для кнопок перехода
+    toDeskBtn.addEventListener('click', switchToDesk);
+    toComputerBtn.addEventListener('click', switchToComputer);
+
+    // Оригинальный код системы приёма сигналов
     // Флаг блокировки переподключения
     let reconnectInProgress = new Set();
 
@@ -802,44 +1099,44 @@
     }
 
     // Анимация текста по символам с задержкой (эффект печати)
-function animateText(element, text, creepy = false) {
-  return new Promise(resolve => {
-    element.value = '';
-    let i = 0;
-    const lines = text.split('\\n'); // Разделяем по \n
-    let currentLine = 0;
-    let currentChar = 0;
-    
-    function step() {
-      if (currentLine >= lines.length) {
-        resolve();
-        return;
-      }
-      
-      if (currentChar < lines[currentLine].length) {
-        // Добавляем символ к текущей строке
-        element.value += lines[currentLine][currentChar];
-        currentChar++;
-      } else {
-        // Переходим на новую строку
-        element.value += '\n';
-        currentLine++;
-        currentChar = 0;
-      }
-      
-      if (creepy) {
-        element.style.color = 'var(--creepy-red)';
-      } else {
-        element.style.color = 'var(--soft-yellow)';
-      }
-      element.scrollTop = element.scrollHeight;
-      
-      setTimeout(step, 10); // Увеличил скорость для ASCII-артов
+    function animateText(element, text, creepy = false) {
+      return new Promise(resolve => {
+        element.value = '';
+        let i = 0;
+        const lines = text.split('\\n'); // Разделяем по \n
+        let currentLine = 0;
+        let currentChar = 0;
+        
+        function step() {
+          if (currentLine >= lines.length) {
+            resolve();
+            return;
+          }
+          
+          if (currentChar < lines[currentLine].length) {
+            // Добавляем символ к текущей строке
+            element.value += lines[currentLine][currentChar];
+            currentChar++;
+          } else {
+            // Переходим на новую строку
+            element.value += '\n';
+            currentLine++;
+            currentChar = 0;
+          }
+          
+          if (creepy) {
+            element.style.color = 'var(--creepy-red)';
+          } else {
+            element.style.color = 'var(--soft-yellow)';
+          }
+          element.scrollTop = element.scrollHeight;
+          
+          setTimeout(step, 10); // Увеличил скорость для ASCII-артов
+        }
+        
+        step();
+      });
     }
-    
-    step();
-  });
-}
 
     // Анимация бинарного сигнала с шумом (добавление случайных символов после битов)
     function animateBinaryWithNoise(element, binaryStr) {
