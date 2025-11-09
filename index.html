@@ -278,6 +278,13 @@
         0 0 45px var(--creepy-red-glow);
     }
 
+    /* Кнопка расшифровки */
+    #decrypt-btn {
+      align-self: center;
+      margin: 10px 0;
+      width: 200px;
+    }
+
     /* Усиленный глич эффект (искажение кадра) */
     #right-panel::before {
       content: "";
@@ -387,6 +394,7 @@
   <div id="right-panel">
     <textarea id="status-text" readonly></textarea>
     <textarea id="binary-text" readonly></textarea>
+    <button id="decrypt-btn" disabled>Расшифровать</button>
     <textarea id="result-text" readonly></textarea>
   </div>
 
@@ -428,10 +436,13 @@
     const historyList = document.getElementById('history-list');
     const deleteButton = document.getElementById('delete-button');
     const loadingStatus = document.getElementById('loading-status');
+    const decryptBtn = document.getElementById('decrypt-btn');
 
     // История сигналов
     let signalHistory = [];
     let creepyActive = false;
+    let currentBinarySignal = '';
+    let currentResultSignal = '';
 
     // Функция загрузки файлов
     async function loadSignals() {
@@ -725,7 +736,37 @@
       radiooffAudio.play();
     }
 
-    // Приём сигнала с параллельной анимацией статуса и текста
+    // Процесс расшифровки сигнала
+    async function decryptSignal() {
+      decryptBtn.disabled = true;
+      statusText.value = 'Начало расшифровки...';
+
+      // Анимация расшифровки
+      await animateStatusLoading('Расшифровка сигнала', 2000);
+
+      // Очищаем результат перед выводом
+      resultText.value = '';
+
+      // Выводим расшифрованный текст
+      await animateText(resultText, currentResultSignal, creepyActive);
+
+      // Завершение расшифровки
+      if (creepyActive) {
+        statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
+        breakRandomTelescope();
+      } else {
+        statusText.value = 'Расшифровка завершена.';
+      }
+
+      // Добавляем в историю
+      addSignalToHistory(currentBinarySignal, currentResultSignal, creepyActive);
+      
+      // Обновляем состояние кнопок
+      updateReceiveButton();
+      decryptBtn.disabled = true;
+    }
+
+    // Приём сигнала
     async function receiveSignal() {
       // В начале функции проверяем, все ли телескопы онлайн
       const allOnline = TELESCOPES.every(t => t.status === 'online');
@@ -741,6 +782,7 @@
       }
 
       receiveBtn.disabled = true;
+      decryptBtn.disabled = true;
       binaryText.value = '';
       resultText.value = '';
       statusText.value = '';
@@ -748,41 +790,29 @@
       priemAudio.currentTime = 0;
       priemAudio.play();
 
-      const binarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
+      // Генерируем сигнал
+      currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
       creepyActive = Math.random() < 0.25;
-      const resultSignal = creepyActive
+      currentResultSignal = creepyActive
         ? CREEPY_SIGNALS[Math.floor(Math.random() * CREEPY_SIGNALS.length)]
         : NORMAL_SIGNALS[Math.floor(Math.random() * NORMAL_SIGNALS.length)];
 
-      // Параллельно: анимация статуса и бинарный сигнал с шумом
+      // Получение сигнала
       await Promise.all([
         animateStatusLoading('Получение сигнала'),
-        animateBinaryWithNoise(binaryText, binarySignal)
+        animateBinaryWithNoise(binaryText, currentBinarySignal)
       ]);
 
-      // Параллельно: анимация статуса и чистый бинарный сигнал
-      await Promise.all([
-        animateStatusLoading('Расшифровка сигнала'),
-        animateText(binaryText, binarySignal)
-      ]);
+      // Очищаем бинарный сигнал от шума
+      await animateText(binaryText, currentBinarySignal);
 
       priemAudio.pause();
 
-      if (creepyActive) {
-        statusText.value = 'Нестабильное подключение. Не функционирует радиотелескоп.';
-      } else {
-        statusText.value = 'Расшифровка завершена.';
-      }
-
-      await animateText(resultText, resultSignal, creepyActive);
-
-      if (creepyActive) {
-        breakRandomTelescope();
-      }
-
-      addSignalToHistory(binarySignal, resultSignal, creepyActive);
+      // Активируем кнопку расшифровки
+      statusText.value = 'Сигнал получен. Готов к расшифровке.';
+      decryptBtn.disabled = false;
       
-      // В конце функции проверяем состояние телескопов и обновляем кнопку
+      // Обновляем состояние кнопки приёма
       updateReceiveButton();
     }
 
@@ -823,6 +853,7 @@
       statusText.value = 'Сигнал получен.';
       binaryText.value = signal.binary;
       resultText.value = signal.result;
+      decryptBtn.disabled = true; // Блокируем кнопку расшифровки при просмотре истории
       if (signal.creepy) {
         resultText.style.color = 'var(--creepy-red)';
       } else {
@@ -841,6 +872,7 @@
       statusText.value = 'Система готова к работе.';
       binaryText.value = '';
       resultText.value = '';
+      decryptBtn.disabled = true;
     });
 
     // Инициализация при загрузке страницы
@@ -851,9 +883,14 @@
       updateReceiveButton();
     }
 
+    // Обработчики событий
     receiveBtn.addEventListener('click', () => {
       startAmbient();
       receiveSignal();
+    });
+
+    decryptBtn.addEventListener('click', () => {
+      decryptSignal();
     });
 
     // Запускаем инициализацию при загрузке страницы
