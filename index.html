@@ -460,9 +460,13 @@
         if (NORMAL_SIGNALS.length === 0) throw new Error('Файл normal_signals.txt пуст');
         if (CREEPY_SIGNALS.length === 0) throw new Error('Файл creepy_signals.txt пуст');
 
-        loadingStatus.textContent = `Загружено: ${NORMAL_SIGNALS.length} нормальных и ${CREEPY_SIGNALS.length} аномальных сигналов`;
+        // Вместо информации о количестве сигналов просто очищаем статус загрузки
+        loadingStatus.textContent = '';
         receiveBtn.disabled = false;
         receiveBtn.textContent = 'Принять сигнал';
+        
+        // Устанавливаем статус "Система готова к работе" в верхней консоли
+        statusText.value = 'Система готова к работе.';
         
         console.log('Нормальные сигналы:', NORMAL_SIGNALS);
         console.log('Аномальные сигналы:', CREEPY_SIGNALS);
@@ -477,6 +481,7 @@
         CREEPY_SIGNALS = ["Резервный аномальный сигнал: ОШИБКА СИСТЕМЫ"];
         receiveBtn.disabled = false;
         receiveBtn.textContent = 'Принять сигнал (резервный режим)';
+        statusText.value = 'Система готова к работе. (резервный режим)';
       }
     }
 
@@ -833,7 +838,7 @@
       // Перенумеруем id
       signalHistory.forEach((s, i) => s.id = i + 1);
       renderHistory();
-      statusText.value = '';
+      statusText.value = 'Система готова к работе.';
       binaryText.value = '';
       resultText.value = '';
     });
