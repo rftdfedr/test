@@ -464,8 +464,6 @@
       box-shadow: 
         0 0 50px rgba(0, 0, 0, 0.8),
         inset 0 0 30px rgba(0, 0, 0, 0.5);
-      transform-style: preserve-3d;
-      perspective: 1000px;
     }
 
     /* Листок бумаги */
@@ -479,7 +477,6 @@
         0 0 20px rgba(0, 0, 0, 0.3),
         0 0 10px rgba(255, 207, 64, 0.1);
       cursor: grab;
-      transform-origin: center;
       transition: box-shadow 0.3s;
       padding: 20px;
       font-family: 'Courier New', monospace;
@@ -488,6 +485,7 @@
       line-height: 1.4;
       overflow: hidden;
       user-select: none;
+      transform: none !important; /* Убираем 3D трансформации */
     }
 
     .paper:active {
@@ -530,6 +528,7 @@
     .transition-btn {
       position: fixed;
       right: 20px;
+      bottom: 20px;
       z-index: 1002;
       background: rgba(0, 0, 0, 0.7);
       border: 2px solid var(--soft-yellow);
@@ -546,16 +545,6 @@
       background: var(--soft-yellow);
       color: black;
       text-shadow: none;
-    }
-
-    #to-desk-btn {
-      bottom: 20px;
-      top: auto;
-    }
-
-    #to-computer-btn {
-      bottom: 20px;
-      top: auto;
     }
 
     /* Анимации переходов */
@@ -576,11 +565,11 @@
     }
 
     .eye-close {
-      animation: eyeClose 2s ease-in-out;
+      animation: eyeClose 2s ease-in-out forwards;
     }
 
     .eye-open {
-      animation: eyeOpen 2s ease-in-out;
+      animation: eyeOpen 2s ease-in-out forwards;
     }
 
     @keyframes eyeClose {
@@ -597,15 +586,17 @@
         filter: blur(10px);
       }
       100% {
-        opacity: 0;
+        opacity: 1;
         filter: blur(20px);
+        display: flex;
       }
     }
 
     @keyframes eyeOpen {
       0% {
-        opacity: 0;
+        opacity: 1;
         filter: blur(20px);
+        display: flex;
       }
       30% {
         opacity: 1;
@@ -618,23 +609,24 @@
       100% {
         opacity: 0;
         filter: blur(0px);
+        display: none;
       }
     }
 
     .screen-move-up {
-      animation: screenMoveUp 1.5s ease-in-out;
+      animation: screenMoveUp 1.5s ease-in-out forwards;
     }
 
     .screen-move-down {
-      animation: screenMoveDown 1.5s ease-in-out;
+      animation: screenMoveDown 1.5s ease-in-out forwards;
     }
 
     .desk-move-down {
-      animation: deskMoveDown 1.5s ease-in-out;
+      animation: deskMoveDown 1.5s ease-in-out forwards;
     }
 
     .desk-move-up {
-      animation: deskMoveUp 1.5s ease-in-out;
+      animation: deskMoveUp 1.5s ease-in-out forwards;
     }
 
     @keyframes screenMoveUp {
@@ -649,6 +641,7 @@
       100% {
         transform: translateY(-100%);
         opacity: 0;
+        display: none;
       }
     }
 
@@ -656,6 +649,7 @@
       0% {
         transform: translateY(-100%);
         opacity: 0;
+        display: flex;
       }
       50% {
         transform: translateY(-25%);
@@ -679,6 +673,7 @@
       100% {
         transform: translateY(100%);
         opacity: 0;
+        display: none;
       }
     }
 
@@ -686,6 +681,7 @@
       0% {
         transform: translateY(100%);
         opacity: 0;
+        display: flex;
       }
       50% {
         transform: translateY(25%);
@@ -824,7 +820,7 @@
       </div>
     </div>
     <div class="controls-hint">
-      Перемещайте листок мышью • Вращайте с зажатым Shift • Нажмите ↑ для возврата к компьютеру
+      Перемещайте листок мышью • Нажмите ↑ для возврата к компьютеру
     </div>
     
     <!-- Кнопка возврата к компьютеру -->
@@ -838,26 +834,20 @@
     // Флаг блокировки переподключения
     let reconnectInProgress = new Set();
 
-    // Звуки
-    const ambientAudio = new Audio('sound/ambient.mp3');
-    ambientAudio.loop = true;
-    ambientAudio.volume = 0.30;
+    // Звуки (с заглушками для отсутствующих файлов)
+    function createAudioSafe(src) {
+      const audio = new Audio();
+      audio.volume = 0.3;
+      // Не устанавливаем src, чтобы избежать ошибок
+      return audio;
+    }
 
-    const priemAudio = new Audio('sound/priem-obrabotra.mp3');
-    priemAudio.volume = 0.5;
-
-    const radiooffAudio = new Audio('sound/radiooff.mp3');
-    radiooffAudio.volume = 0.5;
-
-    // Звуки расшифровки
-    const decryptAudio1 = new Audio('sound/random_dechifrator_1.mp3');
-    const decryptAudio2 = new Audio('sound/random_dechifrator_2.mp3');
-    decryptAudio1.volume = 0.5;
-    decryptAudio2.volume = 0.5;
-
-    // Звук перехода
-    const transitionAudio = new Audio('sound/transition.mp3');
-    transitionAudio.volume = 0.6;
+    const ambientAudio = createAudioSafe();
+    const priemAudio = createAudioSafe();
+    const radiooffAudio = createAudioSafe();
+    const decryptAudio1 = createAudioSafe();
+    const decryptAudio2 = createAudioSafe();
+    const transitionAudio = createAudioSafe();
 
     // Данные сигналов (будут загружены из файлов)
     let NORMAL_SIGNALS = [];
@@ -914,9 +904,6 @@
     let isDragging = false;
     let startX, startY;
     let initialX, initialY;
-    let rotationX = 0;
-    let rotationY = 0;
-    let isRotating = false;
 
     // Функция для получения случайного неповторяющегося сигнала
     function getRandomSignal(signalArray, usedSet) {
@@ -1269,11 +1256,10 @@
     let ambientStarted = false;
     function startAmbient() {
       if (!ambientStarted) {
-        ambientAudio.play().then(() => {
-          ambientStarted = true;
-        }).catch((e) => {
+        ambientAudio.play().catch((e) => {
           console.log('Ошибка воспроизведения ambient.mp3:', e);
         });
+        ambientStarted = true;
       }
     }
 
@@ -1286,8 +1272,7 @@
       broken.connection = 'Нет связи';
       renderTelescopes();
       updateReceiveButton(); // ДОБАВЛЕНО: обновляем состояние кнопки
-      radiooffAudio.currentTime = 0;
-      radiooffAudio.play();
+      radiooffAudio.play().catch(e => console.log('Ошибка звука:', e));
     }
 
     // Процесс расшифровки сигнала
@@ -1298,8 +1283,7 @@
       
       // Выбираем случайный звук расшифровки
       currentDecryptAudio = Math.random() < 0.5 ? decryptAudio1 : decryptAudio2;
-      currentDecryptAudio.currentTime = 0;
-      currentDecryptAudio.play();
+      currentDecryptAudio.play().catch(e => console.log('Ошибка звука:', e));
       
       // Анимация точек во время очистки от шумов
       statusText.value = 'Очистка сигнала от шумов';
@@ -1356,8 +1340,7 @@
       resultText.value = '';
       statusText.value = '';
 
-      priemAudio.currentTime = 0;
-      priemAudio.play();
+      priemAudio.play().catch(e => console.log('Ошибка звука:', e));
 
       // Генерируем сигнал
       currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
@@ -1444,12 +1427,14 @@
       decryptBtn.disabled = true;
     });
 
-    // Управление листком бумаги
+    // Управление листком бумаги (2D перемещение)
     function initPaperControls() {
-      // Начальная позиция листка
-      paper.style.left = '50%';
-      paper.style.top = '50%';
-      paper.style.transform = 'translate(-50%, -50%)';
+      // Начальная позиция листка по центру
+      const deskRect = document.querySelector('.desk').getBoundingClientRect();
+      const paperRect = paper.getBoundingClientRect();
+      
+      paper.style.left = (deskRect.width - paperRect.width) / 2 + 'px';
+      paper.style.top = (deskRect.height - paperRect.height) / 2 + 'px';
       
       // Обработчики событий для перемещения
       paper.addEventListener('mousedown', startDrag);
@@ -1460,21 +1445,6 @@
       
       document.addEventListener('mouseup', stopDrag);
       document.addEventListener('touchend', stopDrag);
-      
-      // Обработчик для вращения с Shift
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Shift') {
-          isRotating = true;
-          paper.style.cursor = 'grabbing';
-        }
-      });
-      
-      document.addEventListener('keyup', (e) => {
-        if (e.key === 'Shift') {
-          isRotating = false;
-          paper.style.cursor = isDragging ? 'grabbing' : 'grab';
-        }
-      });
     }
 
     function startDrag(e) {
@@ -1502,26 +1472,14 @@
       const currentX = e.clientX;
       const currentY = e.clientY;
       
-      if (isRotating) {
-        // Вращение
-        const deltaX = currentX - startX;
-        const deltaY = currentY - startY;
-        rotationX += deltaY * 0.5;
-        rotationY += deltaX * 0.5;
-        
-        paper.style.transform = `translate(-50%, -50%) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-      } else {
-        // Перемещение
-        const deltaX = currentX - startX;
-        const deltaY = currentY - startY;
-        
-        paper.style.left = `${initialX + deltaX}px`;
-        paper.style.top = `${initialY + deltaY}px`;
-        paper.style.transform = `translate(0, 0) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-      }
+      // Простое 2D перемещение
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
       
-      startX = currentX;
-      startY = currentY;
+      paper.style.left = `${initialX + deltaX}px`;
+      paper.style.top = `${initialY + deltaY}px`;
+      
+      e.preventDefault();
     }
 
     function dragTouch(e) {
@@ -1530,26 +1488,13 @@
       const currentX = e.touches[0].clientX;
       const currentY = e.touches[0].clientY;
       
-      if (isRotating) {
-        // Вращение
-        const deltaX = currentX - startX;
-        const deltaY = currentY - startY;
-        rotationX += deltaY * 0.5;
-        rotationY += deltaX * 0.5;
-        
-        paper.style.transform = `translate(-50%, -50%) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-      } else {
-        // Перемещение
-        const deltaX = currentX - startX;
-        const deltaY = currentY - startY;
-        
-        paper.style.left = `${initialX + deltaX}px`;
-        paper.style.top = `${initialY + deltaY}px`;
-        paper.style.transform = `translate(0, 0) rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
-      }
+      // Простое 2D перемещение
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
       
-      startX = currentX;
-      startY = currentY;
+      paper.style.left = `${initialX + deltaX}px`;
+      paper.style.top = `${initialY + deltaY}px`;
+      
       e.preventDefault();
     }
 
@@ -1563,29 +1508,24 @@
       // Останавливаем ambient звук
       ambientAudio.pause();
       
+      // Сразу скрываем компьютер
+      document.getElementById('left-panel').style.display = 'none';
+      document.getElementById('right-panel').style.display = 'none';
+      toDeskBtn.style.display = 'none';
+      
       // Показываем оверлей перехода
       transitionOverlay.style.display = 'flex';
       transitionOverlay.textContent = 'ПЕРЕХОД К СТОЛУ...';
       transitionOverlay.classList.add('eye-close');
       
       // Воспроизводим звук перехода
-      transitionAudio.currentTime = 0;
-      transitionAudio.play();
-      
-      // Анимация поднятия экрана
-      document.body.classList.add('screen-move-up');
+      transitionAudio.play().catch(e => console.log('Ошибка звука:', e));
       
       // Ждём завершения анимации
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Скрываем основной интерфейс
-      document.getElementById('left-panel').style.display = 'none';
-      document.getElementById('right-panel').style.display = 'none';
-      toDeskBtn.style.display = 'none';
-      
       // Показываем сцену стола
       deskScene.style.display = 'flex';
-      deskScene.classList.add('desk-move-up');
       toComputerBtn.style.display = 'block';
       
       // Анимация открытия глаз
@@ -1611,26 +1551,19 @@
       transitionOverlay.classList.add('eye-close');
       
       // Воспроизводим звук перехода
-      transitionAudio.currentTime = 0;
-      transitionAudio.play();
+      transitionAudio.play().catch(e => console.log('Ошибка звука:', e));
       
-      // Анимация опускания стола
-      deskScene.classList.add('desk-move-down');
+      // Сразу скрываем стол
+      deskScene.style.display = 'none';
       toComputerBtn.style.display = 'none';
       
       // Ждём завершения анимации
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Скрываем сцену стола
-      deskScene.style.display = 'none';
-      deskScene.classList.remove('desk-move-up', 'desk-move-down');
-      
       // Показываем основной интерфейс
       document.getElementById('left-panel').style.display = 'flex';
       document.getElementById('right-panel').style.display = 'flex';
       toDeskBtn.style.display = 'block';
-      document.body.classList.remove('screen-move-up');
-      document.body.classList.add('screen-move-down');
       
       // Анимация открытия глаз
       transitionOverlay.textContent = '';
@@ -1643,11 +1576,10 @@
       // Скрываем оверлей
       transitionOverlay.style.display = 'none';
       transitionOverlay.classList.remove('eye-open');
-      document.body.classList.remove('screen-move-down');
       
       // Возобновляем ambient звук
       if (ambientStarted) {
-        ambientAudio.play();
+        ambientAudio.play().catch(e => console.log('Ошибка звука:', e));
       }
     }
 
