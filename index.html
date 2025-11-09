@@ -526,6 +526,38 @@
       padding: 10px;
     }
 
+    /* Кнопки перехода */
+    .transition-btn {
+      position: fixed;
+      right: 20px;
+      z-index: 1002;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid var(--soft-yellow);
+      color: var(--soft-yellow);
+      padding: 10px 15px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      text-shadow: 0 0 5px var(--soft-yellow-glow);
+      transition: all 0.3s;
+    }
+
+    .transition-btn:hover {
+      background: var(--soft-yellow);
+      color: black;
+      text-shadow: none;
+    }
+
+    #to-desk-btn {
+      bottom: 20px;
+      top: auto;
+    }
+
+    #to-computer-btn {
+      bottom: 20px;
+      top: auto;
+    }
+
     /* Анимации переходов */
     .transition-overlay {
       position: fixed;
@@ -766,6 +798,9 @@
     <textarea id="result-text" readonly></textarea>
   </div>
 
+  <!-- Кнопка перехода к столу -->
+  <button id="to-desk-btn" class="transition-btn">Перейти к столу ↓</button>
+
   <!-- Сцена стола -->
   <div id="desk-scene">
     <div class="desk">
@@ -791,6 +826,9 @@
     <div class="controls-hint">
       Перемещайте листок мышью • Вращайте с зажатым Shift • Нажмите ↑ для возврата к компьютеру
     </div>
+    
+    <!-- Кнопка возврата к компьютеру -->
+    <button id="to-computer-btn" class="transition-btn">Вернуться к компьютеру ↑</button>
   </div>
 
   <!-- Оверлей перехода -->
@@ -855,6 +893,8 @@
     const paperDate = document.getElementById('paper-date');
     const paperSignalType = document.getElementById('paper-signal-type');
     const paperMessage = document.getElementById('paper-message');
+    const toDeskBtn = document.getElementById('to-desk-btn');
+    const toComputerBtn = document.getElementById('to-computer-btn');
 
     // История сигналов
     let signalHistory = [];
@@ -1541,10 +1581,12 @@
       // Скрываем основной интерфейс
       document.getElementById('left-panel').style.display = 'none';
       document.getElementById('right-panel').style.display = 'none';
+      toDeskBtn.style.display = 'none';
       
       // Показываем сцену стола
       deskScene.style.display = 'flex';
       deskScene.classList.add('desk-move-up');
+      toComputerBtn.style.display = 'block';
       
       // Анимация открытия глаз
       transitionOverlay.textContent = '';
@@ -1574,6 +1616,7 @@
       
       // Анимация опускания стола
       deskScene.classList.add('desk-move-down');
+      toComputerBtn.style.display = 'none';
       
       // Ждём завершения анимации
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1585,6 +1628,7 @@
       // Показываем основной интерфейс
       document.getElementById('left-panel').style.display = 'flex';
       document.getElementById('right-panel').style.display = 'flex';
+      toDeskBtn.style.display = 'block';
       document.body.classList.remove('screen-move-up');
       document.body.classList.add('screen-move-down');
       
@@ -1635,6 +1679,10 @@
       }
     }
 
+    // Обработчики кнопок перехода
+    toDeskBtn.addEventListener('click', transitionToDesk);
+    toComputerBtn.addEventListener('click', transitionToComputer);
+
     // Обработчики клавиш для переходов
     document.addEventListener('keydown', (e) => {
       // Переход к столу с компьютера (стрелка вниз)
@@ -1655,14 +1703,8 @@
       updateReceiveButton();
       initPaperControls();
       
-      // Добавляем подсказку об управлении переходами
-      const computerHint = document.createElement('div');
-      computerHint.className = 'controls-hint';
-      computerHint.style.position = 'fixed';
-      computerHint.style.top = '10px';
-      computerHint.style.bottom = 'auto';
-      computerHint.textContent = 'Нажмите ↓ для перехода к столу';
-      document.body.appendChild(computerHint);
+      // Скрываем кнопку возврата к компьютеру изначально
+      toComputerBtn.style.display = 'none';
     }
 
     // Обработчики событий
