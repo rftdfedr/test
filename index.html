@@ -5,15 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EchoNet</title>
   <style>
-    textarea, #history-list {
-    outline: none;
-}
-
-textarea:focus, #history-list:focus {
-    outline: none;
-    border-color: transparent;
-    box-shadow: none;
-}
     /* Мягкий жёлтый цвет #FFCF40 */
     :root {
       --soft-yellow: #ffcf40;
@@ -344,6 +335,11 @@ textarea:focus, #history-list:focus {
         0 0 15px var(--soft-yellow-glow);
       position: relative;
       z-index: 2;
+      outline: none;
+    }
+    textarea:focus {
+      outline: none;
+      border: none;
     }
     #status-text {
       height: 40px;
@@ -567,7 +563,7 @@ textarea:focus, #history-list:focus {
     const comSound = new Audio('sound/com.mp3');
     decryptAudio1.volume = 0.5;
     decryptAudio2.volume = 0.5;
-    comSound.volume = 0.15;
+    comSound.volume = 0.08;
 
     // Данные сигналов (будут загружены из файлов)
     let NORMAL_SIGNALS = [];
@@ -816,10 +812,10 @@ textarea:focus, #history-list:focus {
     function animateText(element, text, creepy = false) {
       return new Promise(resolve => {
         element.value = '';
-        let i = 0;
         const lines = text.split('\\n');
         let currentLine = 0;
         let currentChar = 0;
+        let soundCounter = 0;
         
         function step() {
           if (currentLine >= lines.length) {
@@ -828,18 +824,21 @@ textarea:focus, #history-list:focus {
           }
           
           if (currentChar < lines[currentLine].length) {
-            // Добавляем символ к текущей строке
             element.value += lines[currentLine][currentChar];
             currentChar++;
             
-            // 🔥 ЗВУК ПРИ КАЖДОМ СИМВОЛЕ
-            try {
-              comSound.currentTime = 0;
-              comSound.play().catch(e => {});
-            } catch (e) {}
+            // 🔥 ЗВУК ТОЛЬКО КАЖДЫЙ 3-Й СИМВОЛ И С ЗАДЕРЖКОЙ
+            soundCounter++;
+            if (soundCounter % 3 === 0) {
+              setTimeout(() => {
+                try {
+                  comSound.currentTime = 0;
+                  comSound.play().catch(e => {});
+                } catch (e) {}
+              }, 10);
+            }
             
           } else {
-            // Переходим на новую строку
             element.value += '\n';
             currentLine++;
             currentChar = 0;
@@ -852,7 +851,7 @@ textarea:focus, #history-list:focus {
           }
           element.scrollTop = element.scrollHeight;
           
-          setTimeout(step, 60);
+          setTimeout(step, 50); // 🔥 ЗАДЕРЖКА 50 мс
         }
         
         step();
@@ -1015,8 +1014,9 @@ textarea:focus, #history-list:focus {
       currentDecryptAudio.pause();
       currentDecryptAudio.currentTime = 0;
       
-      // Выводим результат со звуком печати
-      await animateText(resultText, currentResultSignal, creepyActive);
+      // 🔥 ИСПРАВЛЕНИЕ: Заменяем \n на настоящие переносы строк для отображения
+      const displayResult = currentResultSignal.replace(/\\n/g, '\n');
+      await animateText(resultText, displayResult, creepyActive);
 
       // Завершение расшифровки
       if (creepyActive) {
@@ -1092,7 +1092,13 @@ textarea:focus, #history-list:focus {
         dtStr = zalgo(dtStr, 7);
       }
       const id = signalHistory.length + 1;
-      signalHistory.push({id, datetime: dtStr, binary, result, creepy});
+      signalHistory.push({
+        id, 
+        datetime: dtStr, 
+        binary, 
+        result, // сохраняем с \n
+        creepy
+      });
       renderHistory();
     }
 
@@ -1120,7 +1126,11 @@ textarea:focus, #history-list:focus {
       if (!signal) return;
       statusText.value = 'Сигнал из истории.';
       binaryText.value = signal.binary;
-      resultText.value = signal.result;
+      
+      // 🔥 ИСПРАВЛЕНИЕ: Заменяем \n на настоящие переносы строк при отображении
+      const displayResult = signal.result.replace(/\\n/g, '\n');
+      resultText.value = displayResult;
+      
       decryptBtn.disabled = true;
       if (signal.creepy) {
         resultText.style.color = 'var(--creepy-red)';
@@ -1166,9 +1176,3 @@ textarea:focus, #history-list:focus {
   </script>
 </body>
 </html>
-
-
-
-
-
-
