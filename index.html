@@ -1137,7 +1137,7 @@ textarea {
       // Генерируем сигнал
       currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
       
-      creepyActive = Math.random() < 1;
+      creepyActive = Math.random() < 0.3;
       
       // Используем неповторяющиеся сигналы
       currentResultSignal = creepyActive
@@ -1254,6 +1254,7 @@ textarea {
   </script>
 </body>
 </html>
+
 
 
 
