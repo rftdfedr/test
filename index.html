@@ -907,16 +907,16 @@
           unknown: {
             name: "НЕИЗВЕСТНЫЙ",
             creepy: [
-              "УДАЛИ СИГНАЛ ОТ ... ОН ОПАСЕН...",
-              "ТЫ НЕ ЗНАЕШЬ ЧТО ДЕЛАЕШЬ С ДАННЫМИ ОТ ...",
-              "ОНИ СЛЫШАТ ТЕБЯ ЧЕРЕЗ СИГНАЛ ОТ ... ПРЕКРАТИ...",
-              "ЭТОТ СИГНАЛ ОТ ... НЕ ТО ЧЕМ КАЖЕТСЯ... БЕГИ...",
-              "ТВОИ ДАННЫЕ ОТ ... ПРИНАДЛЕЖАТ НАМ...",
-              "МЫ ВИДИМ ТЕБЯ ЧЕРЕЗ СИГНАЛ ОТ ... ВСЕГДА ВИДИМ...",
-              "УНИЧТОЖЬ СИГНАЛ ОТ ... СПАСИСЬ...",
-              "НЕ РАБОТАЙ С СИГНАЛОМ ОТ ... ОН ПРИНАДЛЕЖИТ НАМ...",
-              "МЫ ЗНАЕМ О ТВОЕМ СИГНАЛЕ ОТ ... ПРЕКРАТИ...",
-              "ЭТИ ДАННЫЕ ОТ ... НЕ ДЛЯ ТЕБЯ... ОСТАВЬ..."
+              "УДАЛИ СИГНАЛ ... ОН ОПАСЕН...",
+              "ТЫ НЕ ЗНАЕШЬ ЧТО ДЕЛАЕШЬ С ДАННЫМИ",
+              "ОНИ СЛЫШАТ ТЕБЯ ЧЕРЕЗ СИГНАЛ ... ПРЕКРАТИ...",
+              "СИГНАЛ ... НЕ ТО ЧЕМ КАЖЕТСЯ... БЕГИ...",
+              "ТВОИ ДАННЫЕ ПРИНАДЛЕЖАТ НАМ...",
+              "МЫ ВИДИМ ТЕБЯ... ВСЕГДА ВИДИМ...",
+              "УНИЧТОЖЬ СИГНАЛ ... СПАСИСЬ...",
+              "НЕ РАБОТАЙ С СИГНАЛОМ ... ОН ПРИНАДЛЕЖИТ НАМ...",
+              "МЫ ЗНАЕМ О ТВОЕМ СИГНАЛЕ ... ПРЕКРАТИ...",
+              "ЭТИ ДАННЫЕ НЕ ДЛЯ ТЕБЯ... ОСТАВЬ..."
             ]
           }
         };
@@ -1260,14 +1260,14 @@
               const randomSignal = this.signalHistory[Math.floor(Math.random() * this.signalHistory.length)];
               
               // Заменяем ... на дату и время сигнала
-              const finalMessage = randomMessage.replace('...', `${randomSignal.datetime}`);
+              const finalMessage = randomMessage.replace('...', `№${randomSignal.id}`);
               
               this.addMessage('scientist', finalMessage, true, 'unknown');
             } else {
               // Если истории нет, используем текущую дату и время
               const now = new Date();
               const currentDateTime = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
-              const finalMessage = randomMessage.replace('...', `${currentDateTime}`);
+              const finalMessage = randomMessage.replace('...', `№${signalId}`);
               
               this.addMessage('scientist', finalMessage, true, 'unknown');
             }
@@ -1838,3 +1838,4 @@
   </script>
 </body>
 </html>
+
