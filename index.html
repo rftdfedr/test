@@ -5,6 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EchoNet</title>
   <style>
+    /* Стилизация скроллбара с эффектом свечения */
+textarea::-webkit-scrollbar {
+    width: 14px;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border-left: 1px solid var(--soft-yellow);
+    box-shadow: inset 0 0 5px var(--soft-yellow-glow);
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: var(--soft-yellow);
+    border: 2px solid var(--dark-bg);
+    border-radius: 2px;
+    box-shadow: 
+        0 0 5px var(--soft-yellow-glow),
+        inset 0 0 3px var(--dark-bg);
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+    background: #ffd85c;
+    box-shadow: 
+        0 0 10px var(--soft-yellow-glow),
+        0 0 15px var(--soft-yellow-glow),
+        inset 0 0 3px var(--dark-bg);
+}
+
+textarea::-webkit-scrollbar-thumb:active {
+    background: #ffbb00;
+}
+
+/* Тонкий скроллбар для истории */
+#history-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+#history-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#history-list::-webkit-scrollbar-thumb {
+    background: var(--soft-yellow);
+    border-radius: 2px;
+    box-shadow: 0 0 3px var(--soft-yellow-glow);
+}
+
+#history-list::-webkit-scrollbar-thumb:hover {
+    background: #ffd85c;
+    box-shadow: 0 0 6px var(--soft-yellow-glow);
+}
+
+/* Стили для Firefox */
+textarea {
+    scrollbar-width: thin;
+    scrollbar-color: var(--soft-yellow) var(--dark-bg);
+}
+
+#history-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--soft-yellow) transparent;
+}
+
+.tab-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark-border) transparent;
+}
     /* Мягкий жёлтый цвет #FFCF40 */
     :root {
       --soft-yellow: #ffcf40;
@@ -1176,3 +1243,4 @@
   </script>
 </body>
 </html>
+
