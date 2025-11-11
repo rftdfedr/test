@@ -5,53 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EchoNet</title>
   <style>
-    
-    /* Стилизация скроллбара для почты */
-.mail-list::-webkit-scrollbar {
-    width: 12px;
-}
-
-.mail-list::-webkit-scrollbar-track {
-    background: var(--dark-bg);
-    border-left: 1px solid var(--soft-yellow);
-}
-
-.mail-list::-webkit-scrollbar-thumb {
-    background: var(--soft-yellow);
-    border: 2px solid var(--dark-bg);
-    border-radius: 0;
-}
-
-.mail-list::-webkit-scrollbar-thumb:hover {
-    background: #ffd85c;
-    box-shadow: 0 0 10px var(--soft-yellow-glow);
-}
-
-.mail-text::-webkit-scrollbar {
-    width: 12px;
-}
-
-.mail-text::-webkit-scrollbar-track {
-    background: var(--dark-bg);
-    border-left: 1px solid var(--soft-yellow);
-}
-
-.mail-text::-webkit-scrollbar-thumb {
-    background: var(--soft-yellow);
-    border: 2px solid var(--dark-bg);
-    border-radius: 0;
-}
-
-.mail-text::-webkit-scrollbar-thumb:hover {
-    background: #ffd85c;
-    box-shadow: 0 0 10px var(--soft-yellow-glow);
-}
-
-/* Для Firefox */
-.mail-list, .mail-text {
-    scrollbar-width: thin;
-    scrollbar-color: var(--soft-yellow) var(--dark-bg);
-}
     :root {
       --soft-yellow: #ffcf40;
       --soft-yellow-glow: rgba(255, 207, 64, 0.7);
@@ -348,99 +301,160 @@
       text-shadow: none;
     }
 
-    /* Почта */
-    .mail-list {
+    /* Почта - новая версия */
+    .mail-contacts {
       width: 100%;
-      height: 150px;
-      border: 1px solid var(--soft-yellow);
+      height: 60px;
+      display: flex;
+      border-bottom: 1px solid var(--soft-yellow);
       margin-bottom: 15px;
-      overflow-y: auto;
-      background: var(--dark-bg);
     }
 
-    .mail-item {
+    .contact {
+      flex: 1;
       padding: 10px;
-      border-bottom: 1px solid var(--dark-border);
+      text-align: center;
       cursor: pointer;
+      border-right: 1px solid var(--dark-border);
       transition: background-color 0.3s;
-    }
-
-    .mail-item:hover {
-      background-color: var(--dark-bg-2);
-    }
-
-    .mail-item.unread {
-      font-weight: bold;
-    }
-
-    .mail-sender {
-      font-weight: bold;
-      color: #ffd85c;
-    }
-
-    .mail-preview {
-      font-size: 12px;
-      color: var(--soft-yellow);
-      opacity: 0.8;
-      margin-top: 4px;
-    }
-
-    .mail-time {
-      font-size: 10px;
-      color: var(--dark-border);
-      text-align: right;
-    }
-
-    .mail-content {
-      flex: 1;
-      border: 1px solid var(--soft-yellow);
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      background: var(--dark-bg);
-    }
-
-    .mail-header {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--dark-border);
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-    }
-
-    .mail-text {
-      flex: 1;
-      overflow-y: auto;
-      line-height: 1.4;
-    }
-
-    .mail-progress {
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid var(--dark-border);
-    }
-
-    .progress-label {
-      font-size: 12px;
-      margin-bottom: 8px;
-      color: var(--soft-yellow);
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 20px;
-      background: var(--dark-bg-2);
-      border: 1px solid var(--soft-yellow);
-      margin-bottom: 8px;
       position: relative;
     }
 
-    .progress-fill {
-      height: 100%;
+    .contact:last-child {
+      border-right: none;
+    }
+
+    .contact:hover {
+      background-color: var(--dark-bg-2);
+    }
+
+    .contact.active {
+      background-color: var(--dark-bg-2);
+      color: #ffd85c;
+      font-weight: bold;
+    }
+
+    .contact .badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      color: var(--soft-yellow);
+      font-size: 14px;
+    }
+
+    .mail-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--soft-yellow);
+      background: var(--dark-bg);
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      padding: 10px;
+      border-radius: 5px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .message.scientist {
+      align-self: flex-start;
+      background: var(--dark-bg-2);
+      border: 1px solid var(--soft-yellow);
+    }
+
+    .message.player {
+      align-self: flex-end;
+      background: rgba(255, 207, 64, 0.1);
+      border: 1px solid var(--soft-yellow);
+    }
+
+    .message.creepy {
+      border-color: var(--creepy-red);
+      background: rgba(255, 51, 0, 0.1);
+    }
+
+    .message-header {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 5px;
+    }
+
+    .message-content {
+      line-height: 1.4;
+    }
+
+    .message-input {
+      display: flex;
+      padding: 15px;
+      border-top: 1px solid var(--soft-yellow);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .signal-select {
+      flex: 1;
+      background: var(--dark-bg);
+      border: 1px solid var(--soft-yellow);
+      color: var(--soft-yellow);
+      padding: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .signal-select option {
+      background: var(--dark-bg);
+      color: var(--soft-yellow);
+    }
+
+    .send-btn {
+      background: transparent;
+      border: 1px solid var(--soft-yellow);
+      color: var(--soft-yellow);
+      padding: 8px 15px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .send-btn:hover:not(:disabled) {
       background: var(--soft-yellow);
-      width: 0%;
-      transition: width 0.5s ease;
-      box-shadow: 0 0 10px var(--soft-yellow-glow);
+      color: var(--dark-bg);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .mission-info {
+      padding: 10px;
+      border-top: 1px solid var(--soft-yellow);
+      background: var(--dark-bg-2);
+    }
+
+    .mission-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #ffd85c;
+    }
+
+    .mission-progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-text {
+      font-size: 12px;
     }
 
     #right-panel {
@@ -552,27 +566,32 @@
     }
 
     /* Стилизация скроллбара */
-    textarea::-webkit-scrollbar {
+    textarea::-webkit-scrollbar,
+    .chat-messages::-webkit-scrollbar {
       width: 12px;
     }
 
-    textarea::-webkit-scrollbar-track {
+    textarea::-webkit-scrollbar-track,
+    .chat-messages::-webkit-scrollbar-track {
       background: var(--dark-bg);
       border-left: 1px solid var(--soft-yellow);
     }
 
-    textarea::-webkit-scrollbar-thumb {
+    textarea::-webkit-scrollbar-thumb,
+    .chat-messages::-webkit-scrollbar-thumb {
       background: var(--soft-yellow);
       border: 2px solid var(--dark-bg);
       border-radius: 0;
     }
 
-    textarea::-webkit-scrollbar-thumb:hover {
+    textarea::-webkit-scrollbar-thumb:hover,
+    .chat-messages::-webkit-scrollbar-thumb:hover {
       background: #ffd85c;
       box-shadow: 0 0 10px var(--soft-yellow-glow);
     }
 
-    textarea {
+    textarea,
+    .chat-messages {
       scrollbar-width: thin;
       scrollbar-color: var(--soft-yellow) var(--dark-bg);
     }
@@ -618,8 +637,8 @@
         font-size: 16px;
       }
 
-      .mail-list {
-        height: 200px;
+      .mail-contacts {
+        height: 70px;
       }
     }
 
@@ -678,19 +697,36 @@
     </div>
 
     <div id="mail" class="tab-content" style="display:none; flex-direction: column;">
-      <div id="mail-list" class="mail-list"></div>
-      <div id="mail-content" class="mail-content">
-        <div class="mail-header">
-          <span id="mail-sender">Доктор Петров</span>
-          <span id="mail-date">15.03.2024 14:30</span>
+      <div class="mail-contacts">
+        <div class="contact active" data-contact="petrov">
+          Доктор Петров
+          <span class="badge" id="petrov-badge" style="display: none;">●</span>
         </div>
-        <div id="mail-text" class="mail-text">Выберите письмо для просмотра</div>
-        <div class="mail-progress">
-          <div class="progress-label">Прогресс задания:</div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
+        <div class="contact" data-contact="zhou">
+          Профессор Чжоу
+          <span class="badge" id="zhou-badge" style="display: none;">●</span>
+        </div>
+        <div class="contact" data-contact="schmidt">
+          Доктор Шмидт
+          <span class="badge" id="schmidt-badge" style="display: none;">●</span>
+        </div>
+      </div>
+      
+      <div class="mail-chat">
+        <div id="chat-messages" class="chat-messages"></div>
+        
+        <div class="message-input">
+          <select id="signal-select" class="signal-select">
+            <option value="">-- Выберите сигнал для отправки --</option>
+          </select>
+          <button id="send-btn" class="send-btn">Отправить</button>
+        </div>
+        
+        <div class="mission-info" id="mission-info" style="display: none;">
+          <div class="mission-title">Текущее задание:</div>
+          <div class="mission-progress">
+            <span class="progress-text" id="mission-text"></span>
           </div>
-          <span id="progress-text">Ожидание задания...</span>
         </div>
       </div>
     </div>
@@ -717,43 +753,84 @@
         this.isDecrypting = false;
         this.ambientStarted = false;
 
-        // Система почты и заданий
-        this.currentMission = {
-          target: 0,
-          collected: 0,
-          creepyFound: 0,
-          active: false
+        // Система почты
+        this.currentContact = 'petrov';
+        this.messages = {
+          petrov: [],
+          zhou: [],
+          schmidt: []
+        };
+        
+        this.missions = {
+          petrov: null,
+          zhou: null,
+          schmidt: null
         };
 
-        this.SCIENTIST_RESPONSES = {
-          normal: [
-            "Отличный сигнал! Продолжайте в том же духе.",
-            "Интересные данные. Записываю в архив.",
-            "Стабильный паттерн. Всё в норме.",
-            "Полезная информация для исследований.",
-            "Хорошая работа. Сигнал соответствует ожиданиям."
-          ],
-          
-          creepy: [
-            "Что это за сигнал? Я такого ещё не видел...",
-            "Странные помехи. Проверьте оборудование.",
-            "Эти данные выглядят... необычно.",
-            "Любопытно. Похоже на структурированный шум.",
-            "⚠️ ВНИМАНИЕ: Аномальные паттерны!",
-            "Этот сигнал нарушает все известные протоколы!",
-            "🚨 НЕОПОЗНАННЫЙ ИСТОЧНИК! Будьте осторожны!",
-            "Мои инструменты не могут это классифицировать...",
-            "ЭТО НЕ ДОЛЖНО СУЩЕСТВОВАТЬ!",
-            "🚨🚨🚨 КРИТИЧЕСКАЯ АНОМАЛИЯ! НЕМЕДЛЕННО ПРЕКРАТИТЕ ПРИЁМ! 🚨🚨🚨"
-          ],
-          
-          missions: [
-            { target: 3, message: "Приветствую! Соберите 3 сигнала для калибровки нового оборудования. Это поможет нам улучшить точность наблюдений." },
-            { target: 5, message: "Отлично работаете! Теперь нужно 5 сигналов для анализа частотного спектра. Мы ищем новые паттерны." },
-            { target: 7, message: "Срочное задание! Требуется 7 сигналов для важного эксперимента. Подозреваю необычную активность в секторе Альфа." },
-            { target: 4, message: "Нужно 4 качественных сигнала. Обнаружил странные колебания в данных, нужно больше информации." },
-            { target: 6, message: "Соберите 6 сигналов для завершения текущего исследования. Ваши данные бесценны для науки!" }
-          ]
+        this.SCIENTIST_PROFILES = {
+          petrov: {
+            name: "Доктор Петров",
+            normal: [
+              "Интересный сигнал. Записываю в базу данных.",
+              "Хорошая работа. Продолжайте наблюдения.",
+              "Паттерн соответствует ожиданиям. Всё в норме.",
+              "Полезные данные для калибровки оборудования."
+            ],
+            creepy: [
+              "Странный сигнал... Проверьте антенны.",
+              "Эти данные выглядят аномально.",
+              "⚠️ Внимание! Нестандартный паттерн!",
+              "Этот сигнал нарушает все протоколы!",
+              "🚨 КРИТИЧЕСКАЯ АНОМАЛИЯ!"
+            ],
+            missions: [
+              "Соберите 3 сигнала для калибровки",
+              "Нужно 5 сигналов для эксперимента",
+              "Срочно! Требуется 4 сигнала"
+            ]
+          },
+          zhou: {
+            name: "Профессор Чжоу", 
+            normal: [
+              "Прекрасные данные! Продолжайте в том же духе.",
+              "Очень интересные паттерны. Изучаю...",
+              "Отличная работа! Эти сигналы бесценны.",
+              "Записываю в архив для дальнейшего анализа."
+            ],
+            creepy: [
+              "Необычно... Очень необычно...",
+              "Эти колебания... Я такого не видел!",
+              "Внимание! Аномальная активность!",
+              "Это может быть важно! Нужно больше данных!",
+              "🚨 НЕВЕРОЯТНО! Совершенно новый тип сигнала!"
+            ],
+            missions: [
+              "Пришлите 2 сигнала для лингвистического анализа",
+              "Нужно 4 сигнала с разными частотами", 
+              "Соберите 3 сигнала для моего исследования"
+            ]
+          },
+          schmidt: {
+            name: "Доктор Шмидт",
+            normal: [
+              "Данные приняты. Всё в пределах нормы.",
+              "Сигнал стабилен. Продолжайте мониторинг.",
+              "Полезная информация. Заношу в отчёт.",
+              "Работа идёт по плану. Хорошо."
+            ],
+            creepy: [
+              "Ммм... Любопытно. Биологические паттерны?",
+              "Эти данные... Они не должны существовать.",
+              "ВНИМАНИЕ: Обнаружены неизвестные структуры!",
+              "Это противоречит всем известным законам!",
+              "🚨 БИОЛОГИЧЕСКАЯ АНОМАЛИЯ! НЕМЕДЛЕННО ПРЕКРАТИТЕ!"
+            ],
+            missions: [
+              "Требуется 3 сигнала для биологического анализа",
+              "Соберите 4 сигнала - подозреваю мутации",
+              "Нужно 2 сигнала для проверки гипотезы"
+            ]
+          }
         };
 
         this.NORMAL_SIGNALS = [];
@@ -784,6 +861,14 @@
         this.decryptBtn = document.getElementById('decrypt-btn');
         this.filterToggle = document.getElementById('filter-toggle');
         this.filterStatus = document.getElementById('filter-status');
+        
+        // Почта
+        this.contacts = document.querySelectorAll('.contact');
+        this.chatMessages = document.getElementById('chat-messages');
+        this.signalSelect = document.getElementById('signal-select');
+        this.sendBtn = document.getElementById('send-btn');
+        this.missionInfo = document.getElementById('mission-info');
+        this.missionText = document.getElementById('mission-text');
       }
 
       initAudio() {
@@ -818,121 +903,187 @@
         this.decryptBtn.addEventListener('click', () => this.decryptSignal());
         this.filterToggle.addEventListener('change', () => this.toggleFilter());
         this.deleteButton.addEventListener('click', () => this.deleteSelectedSignal());
+        
+        // Почта
+        this.contacts.forEach(contact => {
+          contact.addEventListener('click', () => this.switchContact(contact));
+        });
+        
+        this.sendBtn.addEventListener('click', () => this.sendSignal());
+        this.signalSelect.addEventListener('change', () => this.updateSendButton());
       }
 
       // Система почты
-      initMailSystem() {
-        setTimeout(() => {
-          this.startNewMission();
-        }, 10000);
+      switchContact(contact) {
+        this.contacts.forEach(c => c.classList.remove('active'));
+        contact.classList.add('active');
+        this.currentContact = contact.dataset.contact;
+        this.updateChat();
+        this.updateSignalSelect();
+        this.hideBadge(this.currentContact);
       }
 
-      startNewMission() {
-        const mission = this.SCIENTIST_RESPONSES.missions[
-          Math.floor(Math.random() * this.SCIENTIST_RESPONSES.missions.length)
-        ];
+      updateChat() {
+        this.chatMessages.innerHTML = '';
+        const messages = this.messages[this.currentContact];
         
-        this.currentMission = {
-          target: mission.target,
-          collected: 0,
-          creepyFound: 0,
-          active: true
-        };
-        
-        this.sendEmail(
-          "Доктор Петров",
-          mission.message,
-          new Date().toLocaleString('ru-RU')
-        );
-        
-        this.updateProgress();
-      }
-
-      sendEmail(sender, text, date) {
-        const mailList = document.getElementById('mail-list');
-        const mailText = document.getElementById('mail-text');
-        const mailSender = document.getElementById('mail-sender');
-        const mailDate = document.getElementById('mail-date');
-        
-        const mailItem = document.createElement('div');
-        mailItem.className = 'mail-item unread';
-        mailItem.innerHTML = `
-          <div class="mail-sender">${sender}</div>
-          <div class="mail-preview">${text.substring(0, 50)}...</div>
-          <div class="mail-time">${date}</div>
-        `;
-        
-        mailItem.addEventListener('click', () => {
-          mailText.textContent = text;
-          mailSender.textContent = sender;
-          mailDate.textContent = date;
-          mailItem.classList.remove('unread');
+        messages.forEach(msg => {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `message ${msg.sender}`;
+          if (msg.creepy) {
+            messageDiv.classList.add('creepy');
+          }
+          
+          messageDiv.innerHTML = `
+            <div class="message-header">${msg.sender === 'scientist' ? this.SCIENTIST_PROFILES[this.currentContact].name : 'Вы'}</div>
+            <div class="message-content">${msg.text}</div>
+          `;
+          
+          this.chatMessages.appendChild(messageDiv);
         });
         
-        mailList.appendChild(mailItem);
-        
-        if (mailList.children.length === 1) {
-          mailItem.click();
-        }
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
       }
 
-      processSignalForMission() {
-        if (!this.currentMission.active) return;
+      updateSignalSelect() {
+        this.signalSelect.innerHTML = '<option value="">-- Выберите сигнал для отправки --</option>';
         
-        this.currentMission.collected++;
+        this.signalHistory.forEach((signal, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = `${signal.id}. ${signal.datetime} ${signal.creepy ? '(Аномальный)' : ''}`;
+          this.signalSelect.appendChild(option);
+        });
         
+        this.updateSendButton();
+      }
+
+      updateSendButton() {
+        this.sendBtn.disabled = this.signalSelect.value === '';
+      }
+
+      sendSignal() {
+        const signalIndex = parseInt(this.signalSelect.value);
+        if (isNaN(signalIndex)) return;
+        
+        const signal = this.signalHistory[signalIndex];
+        if (!signal) return;
+        
+        // Сообщение игрока
+        this.addMessage('player', `Отправлен сигнал #${signal.id} (${signal.datetime})`, false);
+        
+        // Ответ учёного
+        const scientist = this.SCIENTIST_PROFILES[this.currentContact];
         let response;
-        if (this.creepyActive) {
-          this.currentMission.creepyFound++;
-          const responseIndex = Math.min(this.currentMission.creepyFound - 1, this.SCIENTIST_RESPONSES.creepy.length - 1);
-          response = this.SCIENTIST_RESPONSES.creepy[responseIndex];
+        if (signal.creepy) {
+          response = scientist.creepy[Math.floor(Math.random() * scientist.creepy.length)];
         } else {
-          response = this.SCIENTIST_RESPONSES.normal[
-            Math.floor(Math.random() * this.SCIENTIST_RESPONSES.normal.length)
-          ];
+          response = scientist.normal[Math.floor(Math.random() * scientist.normal.length)];
         }
         
-        this.sendEmail(
-          "Доктор Петров",
-          response,
-          new Date().toLocaleString('ru-RU')
-        );
+        setTimeout(() => {
+          this.addMessage('scientist', response, signal.creepy);
+          this.checkMissionProgress(signal.creepy);
+        }, 1000);
         
-        this.updateProgress();
+        this.signalSelect.value = '';
+        this.updateSendButton();
+      }
+
+      addMessage(sender, text, creepy) {
+        this.messages[this.currentContact].push({
+          sender,
+          text,
+          creepy
+        });
+        this.updateChat();
+      }
+
+      checkMissionProgress(isCreepy) {
+        const mission = this.missions[this.currentContact];
+        if (!mission) return;
         
-        if (this.currentMission.collected >= this.currentMission.target) {
+        if (isCreepy) {
+          mission.creepyFound++;
+        }
+        mission.collected++;
+        
+        if (mission.collected >= mission.target) {
           this.completeMission();
         }
       }
 
-      updateProgress() {
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
+      generateMission() {
+        const scientist = this.SCIENTIST_PROFILES[this.currentContact];
+        const target = Math.floor(Math.random() * 3) + 2; // 2-4 сигнала
+        const missionText = scientist.missions[Math.floor(Math.random() * scientist.missions.length)];
         
-        if (this.currentMission.active) {
-          const progress = (this.currentMission.collected / this.currentMission.target) * 100;
-          progressFill.style.width = `${progress}%`;
-          progressText.textContent = `${this.currentMission.collected}/${this.currentMission.target} сигналов`;
+        this.missions[this.currentContact] = {
+          target,
+          collected: 0,
+          creepyFound: 0,
+          text: missionText
+        };
+        
+        this.showMissionInfo();
+        this.showBadge(this.currentContact);
+      }
+
+      showMissionInfo() {
+        const mission = this.missions[this.currentContact];
+        if (mission) {
+          this.missionText.textContent = `${mission.text} (${mission.collected}/${mission.target})`;
+          this.missionInfo.style.display = 'block';
         }
       }
 
       completeMission() {
-        this.currentMission.active = false;
-        
-        const completionText = `Задание выполнено! Собрано ${this.currentMission.collected} сигналов. 
-Аномальных сигналов: ${this.currentMission.creepyFound}
+        const mission = this.missions[this.currentContact];
+        const completionText = `Задание выполнено! Собрано ${mission.collected} сигналов. 
+Аномальных сигналов: ${mission.creepyFound}
 
-Отличная работа! Новое задание будет скоро.`;
+Отличная работа! Спасибо за помощь в исследованиях.`;
+
+        this.addMessage('scientist', completionText, false);
+        this.missions[this.currentContact] = null;
+        this.missionInfo.style.display = 'none';
+        this.hideBadge(this.currentContact);
         
-        this.sendEmail(
-          "Доктор Петров",
-          completionText,
-          new Date().toLocaleString('ru-RU')
-        );
-        
+        // Новое задание через 1-2 минуты
         setTimeout(() => {
-          this.startNewMission();
-        }, 30000);
+          this.generateMission();
+        }, 60000 + Math.random() * 60000);
+      }
+
+      showBadge(contact) {
+        const badge = document.getElementById(`${contact}-badge`);
+        if (badge) {
+          badge.style.display = 'block';
+        }
+        this.updateMailTabBadge();
+      }
+
+      hideBadge(contact) {
+        const badge = document.getElementById(`${contact}-badge`);
+        if (badge) {
+          badge.style.display = 'none';
+        }
+        this.updateMailTabBadge();
+      }
+
+      updateMailTabBadge() {
+        const mailTab = document.querySelector('.tab[data-tab="mail"]');
+        const hasMissions = Object.values(this.missions).some(mission => mission !== null);
+        
+        if (hasMissions && !mailTab.querySelector('.badge')) {
+          const badge = document.createElement('span');
+          badge.className = 'badge';
+          badge.textContent = '●';
+          mailTab.appendChild(badge);
+        } else if (!hasMissions) {
+          const badge = mailTab.querySelector('.badge');
+          if (badge) badge.remove();
+        }
       }
 
       // Основные функции игры
@@ -987,6 +1138,10 @@
         this.tabContents.forEach(tc => {
           tc.style.display = (tc.id === target) ? 'flex' : 'none';
         });
+        
+        if (target === 'mail') {
+          this.updateSignalSelect();
+        }
       }
 
       toggleFilter() {
@@ -1143,9 +1298,6 @@
         const displayResult = this.currentResultSignal.replace(/\\n/g, '\n');
         await this.animateText(this.resultText, displayResult, this.creepyActive);
 
-        // Обработка сигнала для задания
-        this.processSignalForMission();
-
         if (this.creepyActive) {
           this.statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
           this.breakRandomTelescope();
@@ -1278,6 +1430,11 @@
           creepy
         });
         this.renderHistory();
+        
+        // Обновляем селектор в почте если она открыта
+        if (document.getElementById('mail').style.display !== 'none') {
+          this.updateSignalSelect();
+        }
       }
 
       renderHistory() {
@@ -1333,6 +1490,9 @@
         this.binaryText.value = '';
         this.resultText.value = '';
         this.decryptBtn.disabled = true;
+        
+        // Обновляем селектор в почте
+        this.updateSignalSelect();
       }
 
       // Дополнительные функции
@@ -1413,7 +1573,18 @@
         this.updateReceiveButton();
         await this.loadSignals();
         this.updateReceiveButton();
-        this.initMailSystem();
+        
+        // Инициализация почты
+        this.addMessage('scientist', 'Добро пожаловать в EchoNet! Я буду вашим научным консультантом. Присылайте мне интересные сигналы для анализа.', false);
+        
+        // Генерация первых заданий
+        setTimeout(() => {
+          Object.keys(this.SCIENTIST_PROFILES).forEach(contact => {
+            setTimeout(() => {
+              this.generateMission();
+            }, Math.random() * 30000);
+          });
+        }, 10000);
       }
     }
 
@@ -1425,4 +1596,3 @@
   </script>
 </body>
 </html>
-
