@@ -301,7 +301,7 @@
       text-shadow: none;
     }
 
-    /* Почта - новая версия */
+    /* Почта */
     .mail-contacts {
       width: 100%;
       height: 80px;
@@ -356,11 +356,18 @@
       flex-direction: column;
       border: 1px solid var(--soft-yellow);
       background: var(--dark-bg);
+      position: relative;
     }
 
-    .chat-messages {
+    .chat-messages-wrapper {
       flex: 1;
-      overflow-y: auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chat-messages-container {
+      height: 100%;
+      overflow-y: scroll;
       padding: 15px;
       display: flex;
       flex-direction: column;
@@ -427,7 +434,6 @@
       box-shadow: 0 0 5px var(--soft-yellow-glow);
     }
 
-    /* Стилизация выпадающего списка */
     .signal-select option {
       background: var(--dark-bg);
       color: var(--soft-yellow);
@@ -586,20 +592,20 @@
 
     /* Стилизация скроллбара */
     textarea::-webkit-scrollbar,
-    .chat-messages::-webkit-scrollbar,
+    .chat-messages-container::-webkit-scrollbar,
     .signal-select::-webkit-scrollbar {
       width: 12px;
     }
 
     textarea::-webkit-scrollbar-track,
-    .chat-messages::-webkit-scrollbar-track,
+    .chat-messages-container::-webkit-scrollbar-track,
     .signal-select::-webkit-scrollbar-track {
       background: var(--dark-bg);
       border-left: 1px solid var(--soft-yellow);
     }
 
     textarea::-webkit-scrollbar-thumb,
-    .chat-messages::-webkit-scrollbar-thumb,
+    .chat-messages-container::-webkit-scrollbar-thumb,
     .signal-select::-webkit-scrollbar-thumb {
       background: var(--soft-yellow);
       border: 2px solid var(--dark-bg);
@@ -607,20 +613,20 @@
     }
 
     textarea::-webkit-scrollbar-thumb:hover,
-    .chat-messages::-webkit-scrollbar-thumb:hover,
+    .chat-messages-container::-webkit-scrollbar-thumb:hover,
     .signal-select::-webkit-scrollbar-thumb:hover {
       background: #ffd85c;
       box-shadow: 0 0 10px var(--soft-yellow-glow);
     }
 
     textarea,
-    .chat-messages,
+    .chat-messages-container,
     .signal-select {
       scrollbar-width: thin;
       scrollbar-color: var(--soft-yellow) var(--dark-bg);
     }
 
-    /* Стилизация выпадающего списка для разных браузеров */
+    /* Стилизация выпадающего списка */
     .signal-select {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -755,9 +761,11 @@
       </div>
       
       <div class="mail-chat">
-        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-messages-wrapper">
+          <div id="chat-messages" class="chat-messages-container"></div>
+        </div>
         
-        <div class="message-input">
+        <div class="message-input" id="message-input">
           <select id="signal-select" class="signal-select">
             <option value="">-- Выберите сигнал для отправки --</option>
           </select>
@@ -815,6 +823,8 @@
           unknown: false
         };
 
+        this.sentSignals = new Set(); // Для отслеживания отправленных сигналов
+
         this.SCIENTIST_PROFILES = {
           petrov: {
             name: "Доктор Петров",
@@ -841,14 +851,14 @@
           olga: {
             name: "Профессор Ольга", 
             normal: [
-              "Прекрасные данные! Продолжайте в том же духе.",
-              "Очень интересные паттерны. Изучаю...",
-              "Отличная работа! Эти сигналы бесценны.",
-              "Записываю в архив для дальнейшего анализа.",
-              "Молодец! Ты отлично справляешься!",
-              "Заказала тебе суши на ужин, держись там!",
-              "Если будет скучно, звони - поболтаем 😊",
-              "Ты сегодня просто звезда! Так держать!"
+              "Привет! Как твои дела там, на станции?",
+              "Нашла интересный рецепт, вечером приготовлю 😊",
+              "Не забывай делать перерывы! Береги глаза!",
+              "Ты сегодня просто молодец! Горжусь тобой!",
+              "Заказала пиццу на ужин, заходи если хочешь!",
+              "Как настроение? Не скучно там одному?",
+              "Ты отлично справляешься! Так держать!",
+              "Заказала тебе суши на ужин, держись там!"
             ],
             creepy: [
               "Необычно... Очень необычно...",
@@ -913,6 +923,7 @@
         this.sendBtn = document.getElementById('send-btn');
         this.missionInfo = document.getElementById('mission-info');
         this.missionText = document.getElementById('mission-text');
+        this.messageInput = document.getElementById('message-input');
       }
 
       initAudio() {
@@ -964,8 +975,21 @@
         this.currentContact = contact.dataset.contact;
         this.updateChat();
         this.updateSignalSelect();
-        // БАГ: уведомление не снимается при переходе
-        // this.hideBadge(this.currentContact);
+        this.updateMessageInput();
+        
+        // Убираем уведомление при заходе в чат
+        this.hideBadge(this.currentContact);
+        this.unreadMessages[this.currentContact] = false;
+        this.updateMailTabBadge();
+      }
+
+      updateMessageInput() {
+        // Скрываем поле ввода для Ольги и НЕИЗВЕСТНОГО
+        if (this.currentContact === 'olga' || this.currentContact === 'unknown') {
+          this.messageInput.style.display = 'none';
+        } else {
+          this.messageInput.style.display = 'flex';
+        }
       }
 
       updateChat() {
@@ -975,7 +999,8 @@
         messages.forEach(msg => {
           const messageDiv = document.createElement('div');
           messageDiv.className = `message ${msg.sender}`;
-          if (msg.creepy) {
+          // Петрову не показываем красные сообщения даже для аномальных сигналов
+          if (msg.creepy && this.currentContact !== 'petrov') {
             messageDiv.classList.add('creepy');
           }
           
@@ -994,6 +1019,9 @@
         this.signalSelect.innerHTML = '<option value="">-- Выберите сигнал для отправки --</option>';
         
         this.signalHistory.forEach((signal, index) => {
+          // Пропускаем уже отправленные сигналы
+          if (this.sentSignals.has(signal.id)) return;
+          
           const option = document.createElement('option');
           option.value = index;
           option.textContent = `${signal.id}. ${signal.datetime} ${signal.creepy ? '(Аномальный)' : ''}`;
@@ -1014,26 +1042,31 @@
         const signal = this.signalHistory[signalIndex];
         if (!signal) return;
         
+        // Помечаем сигнал как отправленный
+        this.sentSignals.add(signal.id);
+        
         // Сообщение игрока
         this.addMessage('player', `Отправлен сигнал #${signal.id} (${signal.datetime})`, false);
         
         // Ответ учёного
         const scientist = this.SCIENTIST_PROFILES[this.currentContact];
         let response;
-        if (signal.creepy) {
+        if (signal.creepy && this.currentContact !== 'petrov') {
           response = scientist.creepy[Math.floor(Math.random() * scientist.creepy.length)];
         } else {
           response = scientist.normal[Math.floor(Math.random() * scientist.normal.length)];
         }
         
         setTimeout(() => {
-          this.addMessage('scientist', response, signal.creepy);
+          // Петрову не показываем красные сообщения
+          this.addMessage('scientist', response, signal.creepy && this.currentContact !== 'petrov');
           if (this.currentContact !== 'unknown') {
             this.checkMissionProgress(signal.creepy);
           }
         }, 1000);
         
         this.signalSelect.value = '';
+        this.updateSignalSelect(); // Обновляем список после отправки
         this.updateSendButton();
 
         // Шанс появления НЕИЗВЕСТНОГО после аномального сигнала
@@ -1051,7 +1084,7 @@
         this.updateChat();
         
         // Помечаем как непрочитанное если это не текущий контакт
-        if (sender === 'scientist' && this.currentContact !== this.currentContact) {
+        if (sender === 'scientist') {
           this.unreadMessages[this.currentContact] = true;
           this.showBadge(this.currentContact);
         }
@@ -1233,7 +1266,6 @@
         
         if (target === 'mail') {
           this.updateSignalSelect();
-          // БАГ: уведомление не снимается при входе в почту
         }
       }
 
@@ -1595,6 +1627,10 @@
         if (!selected) return;
         
         const selectedId = parseInt(selected.dataset.id);
+        
+        // Удаляем из отправленных если там был
+        this.sentSignals.delete(selectedId);
+        
         this.signalHistory = this.signalHistory.filter(s => s.id !== selectedId);
         this.signalHistory.forEach((s, i) => s.id = i + 1);
         this.renderHistory();
