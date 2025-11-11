@@ -1198,22 +1198,24 @@ textarea {
     }
 
     function showSignal(id) {
-      const signal = signalHistory.find(s => s.id === id);
-      if (!signal) return;
-      statusText.value = 'Сигнал из истории.';
-      binaryText.value = signal.binary;
-      
-      // 🔥 ИСПРАВЛЕНИЕ: Заменяем \n на настоящие переносы строк при отображении
-      const displayResult = signal.result.replace(/\\n/g, '\n');
-      resultText.value = displayResult;
-      
-      decryptBtn.disabled = true;
-      if (signal.creepy) {
-        resultText.style.color = 'var(--creepy-red)';
-      } else {
-        resultText.style.color = 'var(--soft-yellow)';
-      }
-    }
+  const signal = signalHistory.find(s => s.id === id);
+  if (!signal) return;
+  statusText.value = 'Сигнал из истории.';
+  binaryText.value = signal.binary;
+  
+  const displayResult = signal.result.replace(/\\n/g, '\n');
+  resultText.value = displayResult;
+  
+  decryptBtn.disabled = true;
+  if (signal.creepy) {
+    // 🔥 КРАСНЫЙ ЦВЕТ С КРАСНОЙ ПОДСВЕТКОЙ
+    resultText.style.color = 'var(--creepy-red)';
+    resultText.style.textShadow = '0 0 10px var(--creepy-red-glow), 0 0 20px var(--creepy-red-glow)';
+  } else {
+    resultText.style.color = 'var(--soft-yellow)';
+    resultText.style.textShadow = '0 0 5px var(--soft-yellow-glow), 0 0 15px var(--soft-yellow-glow)';
+  }
+}
 
     deleteButton.addEventListener('click', () => {
       const selected = historyList.querySelector('.option.selected');
@@ -1252,5 +1254,6 @@ textarea {
   </script>
 </body>
 </html>
+
 
 
