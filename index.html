@@ -426,7 +426,13 @@ textarea {
         0 0 30px var(--creepy-red-glow),
         0 0 45px var(--creepy-red-glow);
     }
-
+#result-text.creepy {
+    color: var(--creepy-red);
+    text-shadow:
+        0 0 10px var(--creepy-red-glow),
+        0 0 20px var(--creepy-red-glow),
+        0 0 30px var(--creepy-red-glow);
+}
     /* Кнопка расшифровки */
     #decrypt-btn {
       align-self: center;
@@ -877,54 +883,57 @@ textarea {
 
     // Анимация текста по символам с задержкой (эффект печати)
     function animateText(element, text, creepy = false) {
-      return new Promise(resolve => {
-        element.value = '';
-        const lines = text.split('\\n');
-        let currentLine = 0;
-        let currentChar = 0;
-        let soundCounter = 0;
+  return new Promise(resolve => {
+    element.value = '';
+    const lines = text.split('\\n');
+    let currentLine = 0;
+    let currentChar = 0;
+    let soundCounter = 0;
+    
+    function step() {
+      if (currentLine >= lines.length) {
+        resolve();
+        return;
+      }
+      
+      if (currentChar < lines[currentLine].length) {
+        element.value += lines[currentLine][currentChar];
+        currentChar++;
         
-        function step() {
-          if (currentLine >= lines.length) {
-            resolve();
-            return;
-          }
-          
-          if (currentChar < lines[currentLine].length) {
-            element.value += lines[currentLine][currentChar];
-            currentChar++;
-            
-            // 🔥 ЗВУК ТОЛЬКО КАЖДЫЙ 3-Й СИМВОЛ И С ЗАДЕРЖКОЙ
-            soundCounter++;
-            if (soundCounter % 3 === 0) {
-              setTimeout(() => {
-                try {
-                  comSound.currentTime = 0;
-                  comSound.play().catch(e => {});
-                } catch (e) {}
-              }, 10);
-            }
-            
-          } else {
-            element.value += '\n';
-            currentLine++;
-            currentChar = 0;
-          }
-          
-          if (creepy) {
-            element.style.color = 'var(--creepy-red)';
-          } else {
-            element.style.color = 'var(--soft-yellow)';
-          }
-          element.scrollTop = element.scrollHeight;
-          
-          setTimeout(step, 50); // 🔥 ЗАДЕРЖКА 50 мс
+        // ЗВУК ТОЛЬКО КАЖДЫЙ 3-Й СИМВОЛ
+        soundCounter++;
+        if (soundCounter % 3 === 0) {
+          setTimeout(() => {
+            try {
+              comSound.currentTime = 0;
+              comSound.play().catch(e => {});
+            } catch (e) {}
+          }, 10);
         }
         
-        step();
-      });
+      } else {
+        element.value += '\n';
+        currentLine++;
+        currentChar = 0;
+      }
+      
+      if (creepy) {
+        // 🔥 КРАСНЫЙ ЦВЕТ С КРАСНОЙ ПОДСВЕТКОЙ
+        element.style.color = 'var(--creepy-red)';
+        element.style.textShadow = '0 0 10px var(--creepy-red-glow), 0 0 20px var(--creepy-red-glow)';
+      } else {
+        // Жёлтый цвет с жёлтой подсветкой
+        element.style.color = 'var(--soft-yellow)';
+        element.style.textShadow = '0 0 5px var(--soft-yellow-glow), 0 0 15px var(--soft-yellow-glow)';
+      }
+      element.scrollTop = element.scrollHeight;
+      
+      setTimeout(step, 50);
     }
-
+    
+    step();
+  });
+}
     // Анимация бинарного сигнала с шумом (добавление случайных символов после битов)
     function animateBinaryWithNoise(element, binaryStr) {
       return new Promise(resolve => {
@@ -1243,4 +1252,5 @@ textarea {
   </script>
 </body>
 </html>
+
 
