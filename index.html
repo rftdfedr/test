@@ -5,6 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EchoNet</title>
   <style>
+    
+    /* Стилизация скроллбара для почты */
+.mail-list::-webkit-scrollbar {
+    width: 12px;
+}
+
+.mail-list::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border-left: 1px solid var(--soft-yellow);
+}
+
+.mail-list::-webkit-scrollbar-thumb {
+    background: var(--soft-yellow);
+    border: 2px solid var(--dark-bg);
+    border-radius: 0;
+}
+
+.mail-list::-webkit-scrollbar-thumb:hover {
+    background: #ffd85c;
+    box-shadow: 0 0 10px var(--soft-yellow-glow);
+}
+
+.mail-text::-webkit-scrollbar {
+    width: 12px;
+}
+
+.mail-text::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+    border-left: 1px solid var(--soft-yellow);
+}
+
+.mail-text::-webkit-scrollbar-thumb {
+    background: var(--soft-yellow);
+    border: 2px solid var(--dark-bg);
+    border-radius: 0;
+}
+
+.mail-text::-webkit-scrollbar-thumb:hover {
+    background: #ffd85c;
+    box-shadow: 0 0 10px var(--soft-yellow-glow);
+}
+
+/* Для Firefox */
+.mail-list, .mail-text {
+    scrollbar-width: thin;
+    scrollbar-color: var(--soft-yellow) var(--dark-bg);
+}
     :root {
       --soft-yellow: #ffcf40;
       --soft-yellow-glow: rgba(255, 207, 64, 0.7);
@@ -1378,3 +1425,4 @@
   </script>
 </body>
 </html>
+
