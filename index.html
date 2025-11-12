@@ -188,7 +188,7 @@
 
         .system-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
@@ -215,11 +215,6 @@
             color: white;
         }
 
-        .status-warning {
-            background: var(--warning);
-            color: white;
-        }
-
         .system-progress {
             height: 6px;
             background: rgba(255,255,255,0.1);
@@ -234,7 +229,7 @@
             transition: width 0.3s ease;
         }
 
-        /* Правая панель */
+        /* Правая панель - Чат */
         .right-panel {
             padding: 30px;
             display: flex;
@@ -242,7 +237,122 @@
             gap: 20px;
         }
 
-        .display-panel {
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .chat-header {
+            background: var(--primary);
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 500px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            animation: messageAppear 0.3s ease;
+        }
+
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.tucha {
+            align-self: flex-start;
+            background: rgba(0, 100, 200, 0.3);
+            border-left: 4px solid #0064c8;
+        }
+
+        .message.slonyara {
+            align-self: flex-start;
+            background: rgba(0, 150, 0, 0.3);
+            border-left: 4px solid #009600;
+        }
+
+        .message.baba-zina {
+            align-self: flex-start;
+            background: rgba(200, 0, 0, 0.3);
+            border-left: 4px solid #c80000;
+        }
+
+        .message.system {
+            align-self: center;
+            background: rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-style: italic;
+            max-width: 60%;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--accent);
+        }
+
+        .message-text {
+            line-height: 1.4;
+        }
+
+        /* Контакты */
+        .contacts-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .contact-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary);
+        }
+
+        .contact-card.active {
+            background: rgba(212, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        .contact-name {
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .contact-role {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* Консоль */
+        .console-panel {
             background: rgba(255,255,255,0.05);
             border: 2px solid rgba(255,255,255,0.1);
             border-radius: 12px;
@@ -293,59 +403,19 @@
             text-shadow: 0 0 10px var(--danger);
         }
 
-        /* История */
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 10px;
+        .alert-mode {
+            animation: alertGlow 1s infinite;
         }
 
-        .history-item {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 12px;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Контакты */
-        .contacts-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .contact-card {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contact-card:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: var(--primary);
-        }
-
-        .contact-card.active {
-            background: rgba(212, 0, 0, 0.2);
-            border-color: var(--primary);
-        }
-
-        .contact-name {
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 5px;
-        }
-
-        .contact-role {
-            font-size: 12px;
-            opacity: 0.8;
+        @keyframes alertGlow {
+            0%, 100% { 
+                box-shadow: 0 0 20px var(--danger);
+                border-color: var(--danger);
+            }
+            50% { 
+                box-shadow: 0 0 40px var(--danger);
+                border-color: #ff4444;
+            }
         }
     </style>
 </head>
@@ -391,17 +461,17 @@
                 <h3 style="color: var(--accent); margin-bottom: 20px;">ОПЕРАТИВНЫЙ ШТАБ</h3>
                 
                 <div class="contacts-grid">
-                    <div class="contact-card active" data-contact="command">
-                        <div class="contact-name">КОМАНДНЫЙ ЦЕНТР</div>
-                        <div class="contact-role">Главное управление</div>
+                    <div class="contact-card active" data-contact="tucha">
+                        <div class="contact-name">Михаил "Туча"</div>
+                        <div class="contact-role">Командующий операцией</div>
                     </div>
-                    <div class="contact-card" data-contact="recon">
-                        <div class="contact-name">РАЗВЕДЫВАТЕЛЬНЫЙ ОТДЕЛ</div>
-                        <div class="contact-role">Сбор данных</div>
+                    <div class="contact-card" data-contact="slonyara">
+                        <div class="contact-name">Максим "Слоняра"</div>
+                        <div class="contact-role">Технический специалист</div>
                     </div>
-                    <div class="contact-card" data-contact="tech">
-                        <div class="contact-name">ТЕХНИЧЕСКАЯ СЛУЖБА</div>
-                        <div class="contact-role">Обслуживание систем</div>
+                    <div class="contact-card" data-contact="baba-zina">
+                        <div class="contact-name">Баба Зина</div>
+                        <div class="contact-role">Моральная поддержка</div>
                     </div>
                 </div>
             </div>
@@ -409,28 +479,43 @@
 
         <!-- Правая панель -->
         <div class="right-panel">
-            <div class="display-panel">
-                <div class="panel-title">СТАТУС СИСТЕМЫ</div>
-                <div id="status-text">
-                    СИСТЕМА ZOVNET АКТИВИРОВАНА<br>
-                    ГОТОВ К ПРИЕМУ СИГНАЛОВ<br>
-                    СЛАВА РОССИИ!
+            <!-- Консоль по умолчанию -->
+            <div id="console-view">
+                <div class="console-panel">
+                    <div class="panel-title">СТАТУС СИСТЕМЫ</div>
+                    <div id="status-text">
+                        СИСТЕМА ZOVNET АКТИВИРОВАНА<br>
+                        ГОТОВ К ПРИЕМУ СИГНАЛОВ<br>
+                        СЛАВА РОССИИ!
+                    </div>
+                </div>
+
+                <div class="console-panel">
+                    <div class="panel-title">ДВОИЧНЫЙ КОД СИГНАЛА</div>
+                    <div id="binary-text">
+                        // ОЖИДАНИЕ СИГНАЛА...
+                    </div>
+                </div>
+
+                <button id="decrypt-btn" class="btn" disabled>ДЕШИФРОВАТЬ</button>
+
+                <div class="console-panel">
+                    <div class="panel-title">РАСШИФРОВАННЫЕ ДАННЫЕ</div>
+                    <div id="result-text">
+                        // РЕЗУЛЬТАТЫ ДЕШИФРОВКИ...
+                    </div>
                 </div>
             </div>
 
-            <div class="display-panel">
-                <div class="panel-title">ДВОИЧНЫЙ КОД СИГНАЛА</div>
-                <div id="binary-text">
-                    // ОЖИДАНИЕ СИГНАЛА...
-                </div>
-            </div>
-
-            <button id="decrypt-btn" class="btn" disabled>ДЕШИФРОВАТЬ</button>
-
-            <div class="display-panel">
-                <div class="panel-title">РАСШИФРОВАННЫЕ ДАННЫЕ</div>
-                <div id="result-text">
-                    // РЕЗУЛЬТАТЫ ДЕШИФРОВКИ...
+            <!-- Чат (скрыт по умолчанию) -->
+            <div id="chat-view" style="display: none;">
+                <div class="chat-container">
+                    <div class="chat-header">ОПЕРАТИВНЫЙ ЧАТ</div>
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message system">
+                            <div class="message-text">Система чата активирована. Слава России!</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -467,8 +552,40 @@
                     { name: "СИСТЕМА 'РУСИЧ'", status: "online", health: 100 }
                 ];
 
+                this.messages = {
+                    tucha: [
+                        "Браток, держись! Наши парни уже на подходе!",
+                        "Туча на связи! Все идет по плану, работаем!",
+                        "Вижу их панику в эфире! Хохлы дрожат!",
+                        "ZOV в действии! Русские не сдаются!",
+                        "Координаты принял, наводим артиллерию!",
+                        "Молодец, оператор! Продолжаем мониторинг!",
+                        "Слава ВДВ! Слава России!"
+                    ],
+                    slonyara: [
+                        "Системы в норме, братан! Работаем как часы!",
+                        "Слоняра тут! Все фиксирую, данные чистые!",
+                        "Хохлы пытаются глушить - бесполезно!",
+                        "Техника наша - самая надежная!",
+                        "Передаю данные разведке, хорошая работа!",
+                        "Частоты чистые, продолжаем сканирование!",
+                        "За родину! За наших!"
+                    ],
+                    "baba-zina": [
+                        "Сынок, ты там держись! Мы с тобой!",
+                        "Русский дух не сломить! Бог с тобой!",
+                        "Пирожков напекла, как вернешься - угощу!",
+                        "Наши деды за нас воевали, и мы выстоим!",
+                        "Собираем посылки на фронт, все для победы!",
+                        "Родной, береги себя там! Мать молится за тебя!",
+                        "Правда за нами! Победа будет за нами!"
+                    ]
+                };
+
                 this.currentSignal = '';
                 this.isCreepy = false;
+                this.alertMode = false;
+                this.currentContact = 'tucha';
                 this.init();
             }
 
@@ -505,11 +622,50 @@
                 
                 tab.classList.add('active');
                 document.getElementById(tab.dataset.tab).style.display = 'flex';
+
+                // Переключаем вид правой панели
+                if (tab.dataset.tab === 'contacts') {
+                    document.getElementById('console-view').style.display = 'none';
+                    document.getElementById('chat-view').style.display = 'flex';
+                    this.sendRandomMessage();
+                } else {
+                    document.getElementById('console-view').style.display = 'flex';
+                    document.getElementById('chat-view').style.display = 'none';
+                }
             }
 
             switchContact(contact) {
                 document.querySelectorAll('.contact-card').forEach(c => c.classList.remove('active'));
                 contact.classList.add('active');
+                this.currentContact = contact.dataset.contact;
+                this.sendRandomMessage();
+            }
+
+            sendRandomMessage() {
+                const messages = this.messages[this.currentContact];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                this.addChatMessage(this.currentContact, randomMessage);
+            }
+
+            addChatMessage(sender, text) {
+                const chatMessages = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                
+                let senderName = '';
+                switch(sender) {
+                    case 'tucha': senderName = 'Михаил "Туча"'; break;
+                    case 'slonyara': senderName = 'Максим "Слоняра"'; break;
+                    case 'baba-zina': senderName = 'Баба Зина'; break;
+                }
+
+                messageDiv.className = `message ${sender}`;
+                messageDiv.innerHTML = `
+                    <div class="message-sender">${senderName}</div>
+                    <div class="message-text">${text}</div>
+                `;
+
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
             renderSystems() {
@@ -559,10 +715,12 @@
                 setTimeout(() => {
                     if (this.isCreepy) {
                         this.currentSignal = this.creepySignals[Math.floor(Math.random() * this.creepySignals.length)];
-                        status.innerHTML = "ОБНАРУЖЕН АНОМАЛЬНЫЙ СИГНАЛ! ВНИМАНИЕ!";
+                        status.textContent = "ОБНАРУЖЕН АНОМАЛЬНЫЙ СИГНАЛ! ВНИМАНИЕ!";
+                        this.activateAlertMode();
                     } else {
                         this.currentSignal = this.signals[Math.floor(Math.random() * this.signals.length)];
                         status.textContent = "СИГНАЛ ОБНАРУЖЕН! ГОТОВ К ДЕШИФРОВКЕ!";
+                        this.deactivateAlertMode();
                     }
 
                     this.generateBinarySignal();
@@ -575,6 +733,16 @@
                     }
 
                 }, 2000);
+            }
+
+            activateAlertMode() {
+                this.alertMode = true;
+                document.getElementById('console-view').classList.add('alert-mode');
+            }
+
+            deactivateAlertMode() {
+                this.alertMode = false;
+                document.getElementById('console-view').classList.remove('alert-mode');
             }
 
             generateBinarySignal() {
@@ -600,12 +768,12 @@
 
                 setTimeout(() => {
                     resultText.textContent = this.currentSignal;
-                    resultText.classList.add('signal-active');
                     
                     if (this.isCreepy) {
                         resultText.classList.add('creepy-signal');
                         statusText.textContent = "ДЕШИФРОВКА ЗАВЕРШЕНА! ОБНАРУЖЕНА УГРОЗА!";
                     } else {
+                        resultText.classList.remove('creepy-signal');
                         statusText.textContent = "ДЕШИФРОВКА ЗАВЕРШЕНА! СЛАВА РОССИИ!";
                     }
 
@@ -618,7 +786,7 @@
 
                 const randomSystem = onlineSystems[Math.floor(Math.random() * onlineSystems.length)];
                 randomSystem.status = 'offline';
-                randomSystem.health = Math.floor(Math.random() * 30); // 0-30% здоровья
+                randomSystem.health = Math.floor(Math.random() * 30);
 
                 this.renderSystems();
                 this.updateSystemStatus();
@@ -630,7 +798,6 @@
             repairSystem(index) {
                 const system = this.systems[index];
                 
-                // Анимация ремонта
                 let health = system.health;
                 const repairInterval = setInterval(() => {
                     health += 10;
