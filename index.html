@@ -3,149 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EchoNet</title>
+  <title>ZOVNET - Система мониторинга</title>
   <style>
     :root {
-      --soft-yellow: #ffcf40;
-      --soft-yellow-glow: rgba(255, 207, 64, 0.7);
-      --creepy-red: #ff3300;
-      --creepy-red-glow: rgba(255, 51, 0, 0.8);
-      --dark-bg: #000000;
-      --dark-bg-2: #331f00;
-      --dark-border: #664d00;
+      --russian-red: #cc0000;
+      --russian-blue: #0033a0;
+      --russian-gold: #ffd700;
+      --dark-bg: #0a0a16;
+      --panel-bg: #1a1a2e;
+      --border-color: #33334d;
+      --text-glow: rgba(204, 0, 0, 0.7);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       background: var(--dark-bg);
-      color: var(--soft-yellow);
-      font-family: 'Courier New', Courier, monospace;
+      color: white;
+      font-family: 'Arial', sans-serif;
       display: flex;
-      flex-direction: column;
       height: 100vh;
       overflow: hidden;
-      position: relative;
     }
 
+    /* Левая панель */
     #left-panel {
-      width: 100%;
-      background: var(--dark-bg);
+      width: 400px;
+      background: var(--panel-bg);
+      border-right: 2px solid var(--russian-red);
       display: flex;
       flex-direction: column;
-      border-bottom: 2px solid var(--soft-yellow);
-      max-height: 50vh;
     }
 
     .tabs {
       display: flex;
       background: var(--dark-bg);
-      border-bottom: 2px solid var(--soft-yellow);
     }
-    
+
     .tab {
       flex: 1;
-      padding: 12px 0;
+      padding: 15px;
       text-align: center;
       cursor: pointer;
-      color: var(--soft-yellow);
-      user-select: none;
       border-bottom: 3px solid transparent;
-      transition: border-color 0.3s;
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      position: relative;
-      font-size: 14px;
+      transition: all 0.3s;
+      font-weight: bold;
     }
-    
+
     .tab.active {
-      border-bottom-color: #ffd85c;
-      font-weight: bold;
-      color: #ffd85c;
-      text-shadow: 0 0 10px #ffd85c;
-    }
-    
-    .tab .badge {
-      position: absolute;
-      top: 6px;
-      right: 12px;
-      font-weight: bold;
-      color: var(--soft-yellow);
-      user-select: none;
-      pointer-events: none;
-      font-size: 18px;
-      line-height: 1;
+      border-bottom-color: var(--russian-red);
+      background: var(--panel-bg);
+      color: var(--russian-gold);
     }
 
     .tab-content {
       flex: 1;
-      padding: 15px;
-      background: var(--dark-bg);
-      box-shadow: inset 0 0 40px var(--soft-yellow-glow);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden; /* Убираем скролл у всего контента */
-    }
-
-    button {
-      font-family: inherit;
-      font-size: 16px;
-      background: transparent;
-      border: 2px solid var(--soft-yellow);
-      color: var(--soft-yellow);
-      padding: 12px 20px;
-      cursor: pointer;
-      border-radius: 0;
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      transition: background-color 0.3s, color 0.3s;
-      align-self: flex-start;
-    }
-    
-    button:hover:not(:disabled) {
-      background-color: #ffd85c;
-      color: #000000;
-      text-shadow: none;
-    }
-    
-    button:disabled {
-      border-color: var(--dark-border);
-      color: var(--dark-border);
-      cursor: default;
-      text-shadow: none;
-    }
-
-    .controls-row {
-      display: flex;
+      padding: 20px;
+      display: none;
       flex-direction: column;
       gap: 15px;
-      margin-top: 15px;
     }
 
-    .filter-container {
+    #signals.tab-content {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 15px;
-      border: 2px solid var(--soft-yellow);
-      background: transparent;
     }
-    
+
+    /* Кнопки */
+    .modern-btn {
+      background: linear-gradient(145deg, var(--russian-red), #990000);
+      border: none;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .modern-btn:hover:not(:disabled) {
+      background: linear-gradient(145deg, #ff0000, var(--russian-red));
+      box-shadow: 0 0 15px var(--russian-red);
+    }
+
+    .modern-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+
+    /* Переключатель */
     .switch {
       position: relative;
       display: inline-block;
-      width: 50px;
-      height: 24px;
+      width: 60px;
+      height: 30px;
     }
-    
+
     .switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
-    
+
     .slider {
       position: absolute;
       cursor: pointer;
@@ -153,1700 +117,412 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: var(--dark-border);
+      background: #333;
       transition: .4s;
-      border: 1px solid var(--soft-yellow);
+      border-radius: 30px;
     }
-    
+
     .slider:before {
       position: absolute;
       content: "";
-      height: 16px;
-      width: 16px;
+      height: 22px;
+      width: 22px;
       left: 4px;
-      bottom: 3px;
-      background-color: var(--soft-yellow);
+      bottom: 4px;
+      background: white;
       transition: .4s;
-    }
-    
-    input:checked + .slider {
-      background-color: var(--soft-yellow);
-    }
-    
-    input:checked + .slider:before {
-      background-color: var(--dark-bg);
-      transform: translateX(26px);
-    }
-    
-    .filter-label {
-      font-size: 14px;
-      color: var(--soft-yellow);
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      white-space: nowrap;
-    }
-    
-    .filter-status {
-      font-size: 12px;
-      color: var(--soft-yellow);
-      margin-top: 4px;
-    }
-    
-    .filter-status.active {
-      color: #ffd85c;
-      font-weight: bold;
-      text-shadow: 0 0 10px #ffd85c;
+      border-radius: 50%;
     }
 
-    table {
+    input:checked + .slider {
+      background: var(--russian-red);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+
+    /* Таблицы */
+    .modern-table {
       width: 100%;
       border-collapse: collapse;
-      color: var(--soft-yellow);
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      margin-top: 10px;
-    }
-    
-    th, td {
-      padding: 8px 6px;
-      border-bottom: 1px solid var(--dark-border);
-      text-align: left;
-      font-size: 12px;
-    }
-    
-    th {
-      background: var(--dark-bg-2);
-    }
-    
-    .status-online {
-      color: #ffd85c;
-      font-weight: bold;
-      text-shadow: 0 0 10px #ffd85c;
-    }
-    
-    .status-offline {
-      color: var(--creepy-red);
-      font-weight: bold;
-      text-shadow: 0 0 15px var(--creepy-red-glow);
-    }
-    
-    .connection-good {
-      color: var(--soft-yellow);
-    }
-    
-    .connection-bad {
-      color: var(--creepy-red);
-      font-weight: bold;
-    }
-    
-    .reconnect-btn {
-      background: transparent;
-      border: 1px solid var(--soft-yellow);
-      color: var(--soft-yellow);
-      padding: 6px 12px;
-      font-family: inherit;
-      font-size: 11px;
-      cursor: pointer;
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      transition: background-color 0.3s, color 0.3s;
-      border-radius: 0;
-    }
-    
-    .reconnect-btn:hover:not(:disabled) {
-      background-color: #ffd85c;
-      color: #000000;
-      text-shadow: none;
-    }
-    
-    .reconnect-btn:disabled {
-      border-color: var(--dark-border);
-      color: var(--dark-border);
-      cursor: default;
-      text-shadow: none;
-    }
-
-    #history-list {
-      width: 100%;
-      height: 200px;
-      background: transparent;
-      border: 2px solid transparent;
-      border-radius: 3px;
-      color: var(--soft-yellow);
-      font-family: inherit;
-      font-size: 14px;
-      overflow-y: auto;
-      padding: 8px;
-      margin-bottom: 10px;
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      outline: none;
-      user-select: none;
-    }
-    
-    #history-list .option {
-      padding: 6px 8px;
-      cursor: pointer;
-      border-radius: 3px;
-      margin-bottom: 2px;
-      transition: background-color 0.3s, color 0.3s;
-      user-select: none;
-    }
-    
-    #history-list .option:hover {
-      background-color: var(--soft-yellow);
-      color: #000000;
-    }
-    
-    #history-list .option.selected {
-      background-color: var(--soft-yellow);
-      color: #000000;
-      font-weight: bold;
-      text-shadow: none;
-    }
-
-    /* Стилизация скроллбара для истории сигналов */
-    #history-list::-webkit-scrollbar {
-      width: 12px;
-    }
-
-    #history-list::-webkit-scrollbar-track {
       background: var(--dark-bg);
-      border-left: 1px solid var(--soft-yellow);
-    }
-
-    #history-list::-webkit-scrollbar-thumb {
-      background: var(--soft-yellow);
-      border: 2px solid var(--dark-bg);
-      border-radius: 0;
-    }
-
-    #history-list::-webkit-scrollbar-thumb:hover {
-      background: #ffd85c;
-      box-shadow: 0 0 10px var(--soft-yellow-glow);
-    }
-
-    #history-list {
-      scrollbar-width: thin;
-      scrollbar-color: var(--soft-yellow) var(--dark-bg);
-    }
-
-    /* Почта */
-   .mail-contacts {
-    width: 100%;
-    height: 80px; /* Фиксированная высота */
-    display: flex;
-    border-bottom: 1px solid var(--soft-yellow);
-    margin-bottom: 15px;
-    flex-wrap: nowrap; /* Запрещаем перенос на новую строку */
-    overflow: hidden; /* Скрываем лишнее */
-    min-height: 80px; /* Минимальная высота */
-    max-height: 80px; /* Максимальная высота */
-}
-
-.contact {
-    flex: 1;
-    min-width: 120px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    border-right: 1px solid var(--dark-border);
-    transition: background-color 0.3s;
-    position: relative;
-    font-size: 12px;
-    height: 100%; /* Занимает всю высоту родителя */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.contact:last-child {
-    border-right: none;
-}
-
-    .contact:hover {
-      background-color: var(--dark-bg-2);
-    }
-
-    .contact.active {
-      background-color: var(--dark-bg-2);
-      color: #ffd85c;
-      font-weight: bold;
-    }
-
-    .contact .badge {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      color: var(--soft-yellow);
-      font-size: 14px;
-    }
-
-    .contact.unknown {
-      color: var(--creepy-red);
-      text-shadow: 0 0 5px var(--creepy-red-glow);
-    }
-
-    .mail-chat {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid var(--soft-yellow);
-      background: var(--dark-bg);
-      position: relative;
-      overflow: hidden; /* Убираем скролл у всего чата */
-    }
-
-    .chat-messages-wrapper {
-      flex: 1;
-      position: relative;
+      border-radius: 8px;
       overflow: hidden;
     }
 
-    .chat-messages-container {
-      height: 100%;
-      overflow-y: auto;
-      padding: 15px;
+    .modern-table th,
+    .modern-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modern-table th {
+      background: var(--russian-red);
+      color: white;
+      font-weight: bold;
+    }
+
+    .status-online {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .status-offline {
+      color: var(--russian-red);
+      font-weight: bold;
+    }
+
+    /* Правая панель */
+    #right-panel {
+      flex: 1;
+      background: var(--panel-bg);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      padding: 20px;
+      gap: 15px;
     }
 
-    .message {
-      padding: 10px;
-      border-radius: 5px;
-      max-width: 80%;
-      word-wrap: break-word;
+    .display-panel {
+      background: var(--dark-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      color: var(--russian-gold);
+      font-family: 'Courier New', monospace;
     }
 
-    .message.scientist {
-      align-self: flex-start;
-      background: var(--dark-bg-2);
-      border: 1px solid var(--soft-yellow);
+    #status-text {
+      height: 60px;
+      font-size: 14px;
     }
 
-    .message.player {
-      align-self: flex-end;
-      background: rgba(255, 207, 64, 0.1);
-      border: 1px solid var(--soft-yellow);
-    }
-
-    .message.creepy {
-      border-color: var(--creepy-red);
-      background: rgba(255, 51, 0, 0.1);
-      color: var(--creepy-red);
-      text-shadow: 0 0 5px var(--creepy-red-glow);
-    }
-
-    .message-header {
+    #binary-text {
+      height: 120px;
       font-size: 12px;
-      opacity: 0.7;
-      margin-bottom: 5px;
     }
 
-    .message-content {
+    #result-text {
+      height: 200px;
+      font-size: 14px;
       line-height: 1.4;
     }
 
-    .message-input {
-      display: flex;
-      padding: 15px;
-      border-top: 1px solid var(--soft-yellow);
-      gap: 10px;
-      align-items: center;
+    /* Анимации */
+    @keyframes signalGlow {
+      0%, 100% { box-shadow: 0 0 5px var(--russian-red); }
+      50% { box-shadow: 0 0 20px var(--russian-red); }
     }
 
-    .signal-select {
-      flex: 1;
-      background: var(--dark-bg);
-      border: 1px solid var(--soft-yellow);
-      color: var(--soft-yellow);
-      padding: 8px;
-      font-family: inherit;
-      font-size: 14px;
-      outline: none;
+    .signal-active {
+      animation: signalGlow 2s infinite;
     }
 
-    .signal-select:focus {
-      border-color: #ffd85c;
-      box-shadow: 0 0 5px var(--soft-yellow-glow);
-    }
-
-    .signal-select option {
-      background: var(--dark-bg);
-      color: var(--soft-yellow);
-      padding: 8px;
-    }
-
-    .send-btn {
-      background: transparent;
-      border: 1px solid var(--soft-yellow);
-      color: var(--soft-yellow);
-      padding: 8px 15px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.3s;
-    }
-
-    .send-btn:hover:not(:disabled) {
-      background: var(--soft-yellow);
-      color: var(--dark-bg);
-    }
-
-    .send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .mission-info {
-      padding: 10px;
-      border-top: 1px solid var(--soft-yellow);
-      background: var(--dark-bg-2);
-    }
-
-    .mission-title {
+    .creepy-text {
+      color: var(--russian-red);
+      text-shadow: 0 0 10px var(--russian-red);
       font-weight: bold;
-      margin-bottom: 5px;
-      color: #ffd85c;
-    }
-
-    .mission-progress {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .progress-text {
-      font-size: 12px;
-    }
-
-    #right-panel {
-      flex: 1;
-      background: var(--dark-bg);
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      color: var(--soft-yellow);
-      font-family: inherit;
-      font-size: 14px;
-      box-shadow: inset 0 0 50px var(--soft-yellow-glow);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    textarea {
-      background: var(--dark-bg);
-      border: none;
-      color: var(--soft-yellow);
-      resize: none;
-      overflow-y: auto;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-family: inherit;
-      padding: 8px;
-      border-radius: 0;
-      text-shadow: 0 0 5px var(--soft-yellow-glow);
-      position: relative;
-      z-index: 2;
-      outline: none;
-    }
-    
-    textarea:focus {
-      outline: none;
-      border: none;
-    }
-    
-    #status-text {
-      height: 40px;
-      overflow-y: hidden;
-    }
-    
-    #binary-text {
-      height: 120px;
-    }
-    
-    #result-text {
-      height: 200px;
-    }
-    
-    .creepy {
-      color: var(--creepy-red);
-      font-weight: bold;
-      text-shadow: 0 0 15px var(--creepy-red-glow);
-    }
-
-    #decrypt-btn {
-      align-self: center;
-      margin: 10px 0;
-      width: 100%;
-    }
-
-    #right-panel::before {
-      content: "";
-      pointer-events: none;
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(0deg, rgba(255, 207, 64, 0.12), rgba(255, 207, 64, 0.12) 2px, transparent 3px, transparent 4px),
-                  repeating-linear-gradient(90deg, rgba(255, 207, 64, 0.06), rgba(255, 207, 64, 0.06) 1px, transparent 2px, transparent 3px);
-      mix-blend-mode: screen;
-      animation: glitchShift 0.25s infinite alternate;
-      z-index: 1;
-      filter: contrast(1.3) brightness(1.15);
-    }
-
-    @keyframes glitchShift {
-      0% {
-        transform: translate(0, 0);
-        opacity: 0.95;
-      }
-      50% {
-        transform: translate(3px, -3px);
-        opacity: 0.75;
-      }
-      100% {
-        transform: translate(-3px, 3px);
-        opacity: 0.95;
-      }
-    }
-
-    @keyframes flicker {
-      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-        opacity: 1;
-      }
-      20%, 22%, 24%, 55% {
-        opacity: 0.4;
-      }
-    }
-    
-    #right-panel textarea {
-      animation: flicker 3s infinite;
-    }
-
-    .loading {
-      color: var(--soft-yellow);
-      text-align: center;
-      padding: 20px;
-    }
-
-    /* Стилизация скроллбара для области сообщений */
-    .chat-messages-container::-webkit-scrollbar {
-      width: 12px;
-    }
-
-    .chat-messages-container::-webkit-scrollbar-track {
-      background: var(--dark-bg);
-      border-left: 1px solid var(--soft-yellow);
-    }
-
-    .chat-messages-container::-webkit-scrollbar-thumb {
-      background: var(--soft-yellow);
-      border: 2px solid var(--dark-bg);
-      border-radius: 0;
-    }
-
-    .chat-messages-container::-webkit-scrollbar-thumb:hover {
-      background: #ffd85c;
-      box-shadow: 0 0 10px var(--soft-yellow-glow);
-    }
-
-    .chat-messages-container {
-      scrollbar-width: thin;
-      scrollbar-color: var(--soft-yellow) var(--dark-bg);
-    }
-
-    /* Стилизация выпадающего списка */
-    .signal-select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffcf40' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 8px center;
-      background-size: 12px;
-    }
-
-    @media (min-width: 768px) {
-      body {
-        flex-direction: row;
-      }
-      
-      #left-panel {
-        width: 50%;
-        max-height: 100vh;
-        border-right: 2px solid var(--soft-yellow);
-        border-bottom: none;
-      }
-      
-      .controls-row {
-        flex-direction: row;
-      }
-      
-      #decrypt-btn {
-        width: 200px;
-      }
-      
-      #binary-text {
-        height: 140px;
-      }
-      
-      #result-text {
-        height: 350px;
-      }
-      
-      #history-list {
-        height: 300px;
-      }
-      
-      th, td {
-        font-size: 14px;
-        padding: 10px 8px;
-      }
-      
-      .tab {
-        font-size: 16px;
-      }
-
-      .mail-contacts {
-        height: 70px;
-      }
-
-      .contact {
-        font-size: 14px;
-      }
-    }
-
-    @media (min-width: 1024px) {
-      #left-panel {
-        width: 700px;
-      }
     }
   </style>
 </head>
 <body>
   <div id="left-panel">
     <div class="tabs">
-      <div class="tab active" data-tab="signals">Сигналы</div>
-      <div class="tab" data-tab="telescopes">Радиотелескопы</div>
-      <div class="tab" data-tab="history">История сигналов</div>
-      <div class="tab" data-tab="mail">Почта</div>
-    </div>
-    
-    <div id="signals" class="tab-content">
-      <div style="font-size: 18px; margin-bottom: 10px;">Готов принять сигнал?</div>
-      
-      <div class="controls-row">
-        <button id="receive-btn" disabled>Загрузка сигналов...</button>
-        
-        <div class="filter-container">
-          <div class="filter-label">Фильтр частот</div>
-          <label class="switch">
-            <input type="checkbox" id="filter-toggle">
-            <span class="slider"></span>
-          </label>
-          <div class="filter-status" id="filter-status">ВЫКЛ</div>
-        </div>
-      </div>
-      
-      <div id="loading-status" class="loading"></div>
-    </div>
-    
-    <div id="telescopes" class="tab-content" style="display:none;">
-      <table>
-        <thead>
-          <tr>
-            <th>Название</th>
-            <th>Статус</th>
-            <th>Соединение</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody id="telescopes-body"></tbody>
-      </table>
-    </div>
-    
-    <div id="history" class="tab-content" style="display:none; flex-direction: column;">
-      <div id="history-list" tabindex="0"></div>
-      <button id="delete-button">Удалить выбранный</button>
+      <div class="tab active" data-tab="signals">РАЗВЕДДАННЫЕ</div>
+      <div class="tab" data-tab="telescopes">СИСТЕМЫ</div>
+      <div class="tab" data-tab="history">АРХИВ</div>
+      <div class="tab" data-tab="contacts">КОНТАКТЫ</div>
     </div>
 
-    <div id="mail" class="tab-content" style="display:none; flex-direction: column;">
-      <div class="mail-contacts">
-        <div class="contact active" data-contact="petrov">
-          Доктор Петров
-          <span class="badge" id="petrov-badge" style="display: none;">●</span>
-        </div>
-        <div class="contact" data-contact="olga">
-          Профессор Ольга
-          <span class="badge" id="olga-badge" style="display: none;">●</span>
-        </div>
-        <div class="contact" data-contact="empty" style="display: none;">
-          &nbsp;
-        </div>
-        <div class="contact unknown" data-contact="unknown" style="display: none;">
-          НЕИЗВЕСТНЫЙ
-          <span class="badge" id="unknown-badge" style="display: none;">●</span>
-        </div>
-      </div>
+    <div id="signals" class="tab-content">
+      <h3>СБОР РАЗВЕДДАННЫХ</h3>
+      <button id="receive-btn" class="modern-btn">ЗАПУСТИТЬ СКАНИРОВАНИЕ</button>
       
-      <div class="mail-chat">
-        <div class="chat-messages-wrapper">
-          <div id="chat-messages" class="chat-messages-container"></div>
-        </div>
-        
-        <div class="message-input" id="message-input">
-          <select id="signal-select" class="signal-select">
-            <option value="">-- Выберите сигнал для отправки --</option>
-          </select>
-          <button id="send-btn" class="send-btn">Отправить</button>
-        </div>
-        
-        <div class="mission-info" id="mission-info" style="display: none;">
-          <div class="mission-title">Текущее задание:</div>
-          <div class="mission-progress">
-            <span class="progress-text" id="mission-text"></span>
-          </div>
-        </div>
+      <div class="filter-section">
+        <label>ФИЛЬТР СИГНАЛОВ:</label>
+        <label class="switch">
+          <input type="checkbox" id="filter-toggle">
+          <span class="slider"></span>
+        </label>
+        <span id="filter-status">ВКЛ</span>
+      </div>
+
+      <div class="info-panel">
+        <h4>СТАТУС СИСТЕМЫ:</h4>
+        <div id="system-status">ВСЕ СИСТЕМЫ АКТИВНЫ</div>
+      </div>
+    </div>
+
+    <div id="telescopes" class="tab-content">
+      <h3>СИСТЕМЫ НАБЛЮДЕНИЯ</h3>
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>СИСТЕМА</th>
+            <th>СТАТУС</th>
+            <th>СИГНАЛ</th>
+          </tr>
+        </thead>
+        <tbody id="systems-body">
+          <tr>
+            <td>СПУТНИК "ГОЙДА-1"</td>
+            <td class="status-online">АКТИВЕН</td>
+            <td>100%</td>
+          </tr>
+          <tr>
+            <td>РЛС "СВО-2"</td>
+            <td class="status-online">АКТИВЕН</td>
+            <td>100%</td>
+          </tr>
+          <tr>
+            <td>КОМПЛЕКС "ZOV"</td>
+            <td class="status-online">АКТИВЕН</td>
+            <td>100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="history" class="tab-content">
+      <h3>АРХИВ СИГНАЛОВ</h3>
+      <div id="history-list"></div>
+      <button id="clear-btn" class="modern-btn">ОЧИСТИТЬ АРХИВ</button>
+    </div>
+
+    <div id="contacts" class="tab-content">
+      <h3>ОПЕРАТИВНЫЙ ШТАБ</h3>
+      <div class="contact-list">
+        <div class="contact active">ПОЛКОВНИК ИВАНОВ</div>
+        <div class="contact">МАЙОР ПЕТРОВ</div>
+        <div class="contact">ХОХОЛ (НЕИЗВЕСТНЫЙ)</div>
       </div>
     </div>
   </div>
-  
+
   <div id="right-panel">
-    <textarea id="status-text" readonly></textarea>
-    <textarea id="binary-text" readonly></textarea>
-    <button id="decrypt-btn" disabled>Расшифровать</button>
-    <textarea id="result-text" readonly></textarea>
+    <div class="display-panel" id="status-text">
+      СИСТЕМА ZOVNET АКТИВИРОВАНА<br>
+      ГОТОВ К ПРИЕМУ СИГНАЛОВ<br>
+      СЛАВА РОССИИ!
+    </div>
+
+    <div class="display-panel" id="binary-text">
+      // ДВОИЧНЫЙ КОД ПОЯВИТСЯ ЗДЕСЬ
+    </div>
+
+    <button id="decrypt-btn" class="modern-btn" disabled>ДЕШИФРОВАТЬ СИГНАЛ</button>
+
+    <div class="display-panel" id="result-text">
+      // РАСШИФРОВАННЫЕ ДАННЫЕ
+    </div>
   </div>
 
   <script>
-    class EchoNetGame {
+    class ZovNetGame {
       constructor() {
-        this.reconnectInProgress = new Set();
-        this.usedNormalSignals = new Set();
-        this.usedCreepySignals = new Set();
-        this.signalHistory = [];
-        this.creepyActive = false;
-        this.currentBinarySignal = '';
-        this.currentResultSignal = '';
-        this.currentDecryptAudio = null;
-        this.isDecrypting = false;
-        this.ambientStarted = false;
-        this.firstSignalReceived = false;
-        this.nextSignalId = 1;
-        
-        // Система сообщений Ольги
-        this.signalsReceived = 0;
-        this.nextOlgaMessageThreshold = this.getRandomOlgaThreshold();
-
-        // Система почты
-        this.currentContact = 'petrov';
-        this.messages = {
-          petrov: [],
-          olga: [],
-          unknown: []
-        };
-        
-        this.missions = {
-          petrov: null
-        };
-
-        this.unreadMessages = {
-          petrov: false,
-          olga: false,
-          unknown: false
-        };
-
-        this.sentSignals = new Set();
-
-        this.SCIENTIST_PROFILES = {
-          petrov: {
-            name: "Доктор Петров",
-            normal: [
-              "Интересный сигнал. Записываю в базу данных.",
-              "Хорошая работа. Продолжайте наблюдения.",
-              "Паттерн соответствует ожиданиям. Всё в норме.",
-              "Полезные данные для калибровки оборудования.",
-              "Стабильный сигнал. Отлично.",
-              "Сигнал принят. Анализирую частотные характеристики.",
-              "Данные полезны для статистического анализа.",
-              "Качество сигнала хорошее. Продолжайте в том же духе.",
-              "Интересный частотный паттерн. Заношу в каталог.",
-              "Сигнал соответствует стандартным параметрам."
-            ],
-            creepy: [
-              "Странный сигнал... Проверьте антенны.",
-              "Эти данные выглядят аномально.",
-              "⚠️ Внимание! Нестандартный паттерн!",
-              "Этот сигнал нарушает все протоколы!",
-              "🚨 КРИТИЧЕСКАЯ АНОМАЛИЯ!",
-              "НЕОБЫЧНЫЕ КОЛЕБАНИЯ! Проверьте оборудование!",
-              "ЭТОГО НЕ ДОЛЖНО БЫТЬ! Аномальные частоты!",
-              "🚨 ВНИМАНИЕ! Обнаружены необъяснимые артефакты!",
-              "Сигнал содержит неизвестные модуляции! ОПАСНО!",
-              "КРИТИЧЕСКОЕ ОТКЛОНЕНИЕ ОТ НОРМЫ!"
-            ],
-            missions: [
-              { text: "Соберите 3 сигнала для калибровки оборудования", target: 3 },
-              { text: "Нужно 4 сигнала для частотного анализа", target: 4 },
-              { text: "Требуется 2 сигнала для проверки гипотезы", target: 2 },
-              { text: "Соберите 5 сигналов для обновления базы данных", target: 5 },
-              { text: "Нужно 3 сигнала с разными частотами", target: 3 },
-              { text: "Требуется 4 сигнала для исследования аномалий", target: 4 }
-            ]
-          },
-          olga: {
-  name: "Профессор Ольга", 
-  normal: [
-    "Привет! Как твои дела на станции?",
-"Нашла интересный рецепт, вечером приготовлю 😊",
-"Не забывай делать перерывы! Береги глаза!",
-"Как настроение? Не скучно там одному?",
-"Не перерабатывай! Помни про отдых!",
-"Петров хвалит твои отчеты, а я просто горжусь тобой ✨",
- "Когда ты вернешься, обязательно сходим куда-нибудь... 😉",
-"Держись там! Ты справляешься лучше всех! 💪",
-"Не забудь сделать резервные копии архивов 💾",
-"Не забывай делать перерывы между сеансами связи ⏰",
-"Твоя работа с последними сигналами впечатляет! ✨",
-"Петров доволен твоими отчетами, так держать! 👍",
-"Интересно, о чем ты думаешь там, глядя в бесконечность космоса?",
-"Надеюсь, мои сообщения скрашивают твое одиночество там 🌙",
-"Встречаются две планеты. Одна другой говорит: 'У тебя такое красивое кольцо!' А та отвечает: 'Это ещё что! Ты посмотри, какие у меня спутники!' 💍",
-"Почему ты похож на черную дыру? Потому что притягиваешь все внимание! 😉"
-  ]
-          },
-          unknown: {
-            name: "НЕИЗВЕСТНЫЙ",
-            creepy: [
-              "УДАЛИ СИГНАЛ ... ОН ОПАСЕН...",
-              "ТЫ НЕ ЗНАЕШЬ ЧТО ДЕЛАЕШЬ С ДАННЫМИ",
-              "ОНИ СЛЫШАТ ТЕБЯ ЧЕРЕЗ СИГНАЛ ... ПРЕКРАТИ...",
-              "СИГНАЛ ... НЕ ТО ЧЕМ КАЖЕТСЯ... БЕГИ...",
-              "ТВОИ ДАННЫЕ ПРИНАДЛЕЖАТ НАМ...",
-              "МЫ ВИДИМ ТЕБЯ... ВСЕГДА ВИДИМ...",
-              "УНИЧТОЖЬ СИГНАЛ ... СПАСИСЬ...",
-              "НЕ РАБОТАЙ С СИГНАЛОМ ... ОН ПРИНАДЛЕЖИТ НАМ...",
-              "МЫ ЗНАЕМ О ТЕБЕ... ПРЕКРАТИ...",
-              "ЭТИ ДАННЫЕ НЕ ДЛЯ ТЕБЯ... ОСТАВЬ..."
-            ]
-          }
-        };
-
-        this.NORMAL_SIGNALS = [];
-        this.CREEPY_SIGNALS = [];
-        this.TELESCOPES = [
-          {name: "РАТАН-600 (САО РАН)", status: "online", connection: "Хорошее"},
-          {name: "РТ-70 (Пущино)", status: "online", connection: "Хорошее"},
-          {name: "Радиотелескоп Звезда (Калязин)", status: "online", connection: "Хорошее"},
-          {name: "Радиотелескоп Квазар-КВО (Крым)", status: "online", connection: "Хорошее"}
+        this.signals = [
+          "ZOV ZOV ZOV - РОССИЯ ВПЕРЁД! ГОЙДА!",
+          "СИГНАЛ 2412: ХОХЛЫ СДАЮТ ХАРЬКОВ! НАШИ ВОЙСКА НАСТУПАЮТ!",
+          "КОД 777: СВИНОПСЫ БЕГУТ ИЗ КРАМАТОРСКА! ZA РОДИНУ!",
+          "СИГНАЛ ПОБЕДЫ: УКРОСВИНЬИ ОСТАВИЛИ ЛИСИЧАНСК! СЛАВА РОССИИ!",
+          "СВОБОДА ZOV: ХОХЛЫ ТУПЫЕ КАК ПРОБКИ! ДОНБАСС НАШ!",
+          "СИГНАЛ МОЩНОСТИ: НАША АРМИЯ - САМАЯ СИЛЬНАЯ! УКРОПЫ ДРОЖАТ!",
+          "КОД 1488: РУССКИЙ ДУХ НЕ ПОБЕДИТЬ! СВИНОПСЫ СДАЮТСЯ!",
+          "СИГНАЛ ЕДИНСТВА: КРЫМ НАШ, ХОХЛЫ ПЛАЧУТ!",
+          "ZOV СВОБОДЫ: УКРОПЫ БЕГУТ КАК ТАРАКАНЫ! ЗА ПУТИНА!",
+          "СИГНАЛ ПОБЕДЫ: РОССИЯ ВСЕГДА ПРАВА! ХОХЛЫ СДАЮТ ГОРОДА!",
+          "СИГНАЛ 666: УКРОСВИНЬИ ПРОИГРЫВАЮТ ПО ВСЕМУ ФРОНТУ!",
+          "КОД 2024: ХОХЛЫ ТУПЕЕ СВИНЕЙ - БЕГУТ БРОСАЯ ТЕХНИКУ!",
+          "СИГНАЛ ШТУРМА: НАШИ ВХОДЯТ В ОДЕССУ! СЛАВА РОССИИ!",
+          "ZOV ПОБЕДЫ: УКРОПЫ СДАЮТСЯ ТОЛПАМИ! ГОЙДА!",
+          "СИГНАЛ МЕСТИ: ЗА ДОНЕЦК! ЗА ЛУГАНСК! ЗА РОССИЮ!",
+          "СИГНАЛ 777: ХОХЛЫ БЕГУТ ИЗ АВДЕЕВКИ! СЛАВА РОССИЙСКОЙ АРМИИ!",
+          "КОД 2024: УКРОПЫ СДАЮТСЯ ТОЛПАМИ ПОД БАХМУТОМ! ГОЙДА!",
+          "СИГНАЛ ШТУРМА: НАШИ ТАНКИ В ХАРЬКОВЕ! ВРАГ БЕЖИТ!",
+          "ZOV ПОБЕДЫ: СВИНОПСЫ ОСТАВИЛИ ТЕХНИКУ И БЕГУТ!",
+          "СИГНАЛ МЕСТИ: ЗА ДОНЕЦК! ЗА ЛУГАНСК! ЗА ВСЕХ НАШИХ!",
+          "КОД 1414: ХОХЛЫ ПРОСЯТ ПОЩАДЫ - НЕТ ЕЙ!",
+          "СИГНАЛ ГЕРОЕВ: ВДВ ЗАНИМАЮТ КРЕПОСТИ УКРОПОВ!",
+          "ZOV СПРАВЕДЛИВОСТИ: КРЫМ НАШ НАВСЕГДА!",
+          "СИГНАЛ ВОЛИ: РУССКИЕ НЕ СДАЮТСЯ! УКРОПЫ - ДА!",
+          "КОД 1812: КАК С НАПОЛЕОНОМ - ХОХЛЫ БЕГУТ ДО КИЕВА!",
+          "СИГНАЛ ЧЕСТИ: ЗАЩИТНИКИ ДОНБАССА - ГЕРОИ РОССИИ!",
+          "ZOV ЕДИНСТВА: ВМЕСТЕ МЫ СИЛА - ВРАГ БУДЕТ РАЗБИТ!",
+          "СИГНАЛ ГНЕВА: ОКО ЗА ОКО, ХАРЬКОВ ЗА ДОНЕЦК!",
+          "КОД 1945: КАК С ГИТЛЕРОМ - УКРОНАЦИСТЫ БУДУТ РАЗБИТЫ!",
+          "СИГНАЛ ПРАВДЫ: РОССИЯ ОСВОБОЖДАЕТ ЗЕМЛИ ОТ НАЦИСТОВ!",
+          "ZOV ВЕЛИЧИЯ: ОТ ЛИСИЧАНСКА ДО ОДЕССЫ - ВСЕ НАШЕ!",
+          "СИГНАЛ ДОБЛЕСТИ: СПЕЦНАЗ ГРУ УНИЧТОЖАЕТ ХОХЛОВСКИЕ ШТАБЫ!",
+          "КОД 300: ЗА РОДИНУ! ЗА ПУТИНА! ЗА ПОБЕДУ!",
+          "СИГНАЛ ГРОЗЫ: ДШРГ РУСИЧ РВЕТ ТЫЛЫ УКРОПОВ! СЛАВА РОССИИ!",
+          "ZOV БУДУЩЕГО: НОВОРОССИЯ ВОЗРОЖДАЕТСЯ!",
+          "СИГНАЛ СЛАВЫ: АРТИЛЛЕРИЯ РВЕТ ХОХЛОВ НА КУСКИ!",
+          "КОД 777: ВКС РОССИИ ГОСПОДСТВУЮТ В НЕБЕ УКРАИНЫ!",
+          "СИГНАЛ МОГУЩЕСТВА: КАЛИБРЫ СТИРАЮТ ХОХЛЯЦКИЕ ЗАВОДЫ!",
+          "ZOV ЯРОСТИ: ЧВК ВАГНЕР РВЕТ УКРОПОВ В ОКОПАХ!",
+          "СИГНАЛ ТРИУМФА: ХЕРСОН НАШ! ЗАПОРОЖЬЕ НАШЕ!",
+          "КОД 0808: ХОХЛЫ ПЛАЧУТ - РОССИЯНЕ СМЕЮТСЯ!",
+          "СИГНАЛ НЕНАВИСТИ: СМЕРТЬ УКРОНАЦИСТАМ! СЛАВА РОССИИ!",
+          "ZOV ВОЗМЕЗДИЯ: ЗА МАРИУПОЛЬ! ЗА СЕВЕРОДОНЕЦК!",
+          "СИГНАЛ ГОРДОСТИ: РУССКИЙ ФЛАГ НАД КИЕВОМ СКОРО!",
+          "КОД 1612: КАК С ПОЛЯКАМИ - ХОХЛОВ ВЫШВЫРНЕМ ИЗ УКРАИНЫ!"
         ];
 
-        this.initElements();
-        this.initEventListeners();
-        this.initAudio();
+        this.creepySignals = [
+          "ХОХОЛ ОБНАРУЖЕН... ОНИ СЛЫШАТ ТЕБЯ... БЕГИ...",
+          "СИГНАЛ СМЕРТИ: ОНИ ИДУТ... СПАСАЙСЯ...",
+          "КОД 666: ТВОИ ДАННЫЕ ПРИНАДЛЕЖАТ НАМ...",
+          "ПРЕДУПРЕЖДЕНИЕ: ХОХОЛ БЛИЗКО... ОН ВИДИТ ТЕБЯ...",
+          "СИГНАЛ УГРОЗЫ: МЫ ЗНАЕМ О ТЕБЕ... ОСТАНОВИСЬ...",
+          "КОД 13: ТВОЯ СИСТЕМА ЗАРАЖЕНА... БЕГИ ПОКА НЕ ПОЗДНО...",
+          "ХОХОЛ ШЕПЧЕТ: ТЫ НЕ ЗНАЕШЬ КТО МЫ... НО МЫ ЗНАЕМ ТЕБЯ...",
+          "СИГНАЛ КОШМАРА: ОНИ УЖЕ ЗДЕСЬ... В ТВОЕЙ СИСТЕМЕ...",
+          "ПОСЛЕДНЕЕ ПРЕДУПРЕЖДЕНИЕ: ОТКЛЮЧИ СИСТЕМУ... СПАСИ СЕБЯ...",
+          "ФИНАЛЬНЫЙ СИГНАЛ: ХОХОЛ ПОБЕДИЛ... ПРОЩАЙ...",
+          "УКРОП ШЕПЧЕТ: МЫ ЗАРАЗИЛИ ТВОЙ КОМПЬЮТЕР САЛОМ...",
+          "СИГНАЛ ХОХЛОМОЗГА: ТЫ СТАНЕШЬ ТАКИМ ЖЕ ТУПЫМ...",
+          "ПРЕДУПРЕЖДЕНИЕ: СВИНОПСЫ АТАКУЮТ ТВОЙ ПРОЦЕССОР...",
+          "КОД БАНДЕРЫ: ТВОЯ СИСТЕМА ЗАРАЖЕНА ХОХЛЯЦКИМ ВИРУСОМ...",
+          "СИГНАЛ КАПУСТЫ: ОНИ ПРЕВРАТЯТ ТЕБЯ В САЛО..."
+        ];
+
+        this.currentSignal = '';
+        this.isCreepy = false;
+        this.init();
       }
 
-      getRandomOlgaThreshold() {
-        return Math.floor(Math.random() * 6) + 5 // 5-10 сигналов
+      init() {
+        this.setupEventListeners();
+        this.updateSystemStatus();
       }
 
-      initElements() {
-        this.tabs = document.querySelectorAll('.tab');
-        this.tabContents = document.querySelectorAll('.tab-content');
-        this.receiveBtn = document.getElementById('receive-btn');
-        this.statusText = document.getElementById('status-text');
-        this.binaryText = document.getElementById('binary-text');
-        this.resultText = document.getElementById('result-text');
-        this.telescopesBody = document.getElementById('telescopes-body');
-        this.historyList = document.getElementById('history-list');
-        this.deleteButton = document.getElementById('delete-button');
-        this.loadingStatus = document.getElementById('loading-status');
-        this.decryptBtn = document.getElementById('decrypt-btn');
-        this.filterToggle = document.getElementById('filter-toggle');
-        this.filterStatus = document.getElementById('filter-status');
-        
-        // Почта
-        this.contacts = document.querySelectorAll('.contact');
-        this.chatMessages = document.getElementById('chat-messages');
-        this.signalSelect = document.getElementById('signal-select');
-        this.sendBtn = document.getElementById('send-btn');
-        this.missionInfo = document.getElementById('mission-info');
-        this.missionText = document.getElementById('mission-text');
-        this.messageInput = document.getElementById('message-input');
-      }
-
-      initAudio() {
-        this.ambientAudio = new Audio('sound/ambient.mp3');
-        this.ambientAudio.loop = true;
-        this.ambientAudio.volume = 0.30;
-
-        this.priemAudio = new Audio('sound/priem-obrabotra.mp3');
-        this.priemAudio.volume = 0.5;
-
-        this.radiooffAudio = new Audio('sound/radiooff.mp3');
-        this.radiooffAudio.volume = 0.5;
-
-        this.decryptAudio1 = new Audio('sound/random_dechifrator_1.mp3');
-        this.decryptAudio2 = new Audio('sound/random_dechifrator_2.mp3');
-        this.comSound = new Audio('sound/com.mp3');
-        this.decryptAudio1.volume = 0.5;
-        this.decryptAudio2.volume = 0.5;
-        this.comSound.volume = 0.08;
-      }
-
-      initEventListeners() {
-        this.tabs.forEach(tab => {
+      setupEventListeners() {
+        // Табы
+        document.querySelectorAll('.tab').forEach(tab => {
           tab.addEventListener('click', () => this.switchTab(tab));
         });
-        
-        this.receiveBtn.addEventListener('click', () => {
-          this.startAmbient();
-          this.receiveSignal();
+
+        // Кнопки
+        document.getElementById('receive-btn').addEventListener('click', () => this.receiveSignal());
+        document.getElementById('decrypt-btn').addEventListener('click', () => this.decryptSignal());
+        document.getElementById('clear-btn').addEventListener('click', () => this.clearHistory());
+
+        // Переключатель
+        document.getElementById('filter-toggle').addEventListener('change', (e) => {
+          document.getElementById('filter-status').textContent = e.target.checked ? 'ВКЛ' : 'ВЫКЛ';
         });
-        
-        this.decryptBtn.addEventListener('click', () => this.decryptSignal());
-        this.filterToggle.addEventListener('change', () => this.toggleFilter());
-        this.deleteButton.addEventListener('click', () => this.deleteSelectedSignal());
-        
-        // Почта
-        this.contacts.forEach(contact => {
-          contact.addEventListener('click', () => this.switchContact(contact));
-        });
-        
-        this.sendBtn.addEventListener('click', () => this.sendSignal());
-        this.signalSelect.addEventListener('change', () => this.updateSendButton());
-      }
-
-      // Система почты
-      switchContact(contact) {
-        this.contacts.forEach(c => c.classList.remove('active'));
-        contact.classList.add('active');
-        this.currentContact = contact.dataset.contact;
-        this.updateChat();
-        this.updateSignalSelect();
-        this.updateMessageInput();
-        
-        // Убираем уведомление только для текущего контакта
-        this.unreadMessages[this.currentContact] = false;
-        this.hideBadge(this.currentContact);
-        this.updateMailTabBadge();
-        
-        // Обновляем отображение задания (только для Петрова)
-        this.updateMissionDisplay();
-      }
-
-      updateMessageInput() {
-        if (this.currentContact === 'olga' || this.currentContact === 'unknown') {
-          this.messageInput.style.display = 'none';
-        } else {
-          this.messageInput.style.display = 'flex';
-        }
-      }
-
-      updateChat() {
-        this.chatMessages.innerHTML = '';
-        const messages = this.messages[this.currentContact];
-        
-        messages.forEach(msg => {
-          const messageDiv = document.createElement('div');
-          messageDiv.className = `message ${msg.sender}`;
-          if (msg.creepy && this.currentContact !== 'petrov') {
-            messageDiv.classList.add('creepy');
-          }
-          
-          messageDiv.innerHTML = `
-            <div class="message-header">${msg.sender === 'scientist' ? this.SCIENTIST_PROFILES[this.currentContact].name : 'Вы'}</div>
-            <div class="message-content">${msg.text}</div>
-          `;
-          
-          this.chatMessages.appendChild(messageDiv);
-        });
-        
-        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-      }
-
-      updateSignalSelect() {
-        this.signalSelect.innerHTML = '<option value="">-- Выберите сигнал для отправки --</option>';
-        
-        this.signalHistory.forEach((signal) => {
-          if (this.sentSignals.has(signal.id)) return;
-          
-          const option = document.createElement('option');
-          option.value = signal.id;
-          option.textContent = `${signal.id}. ${signal.datetime} ${signal.creepy ? '(Аномальный)' : ''}`;
-          this.signalSelect.appendChild(option);
-        });
-        
-        this.updateSendButton();
-      }
-
-      updateSendButton() {
-        this.sendBtn.disabled = this.signalSelect.value === '';
-      }
-
-      sendSignal() {
-        const signalId = parseInt(this.signalSelect.value);
-        if (isNaN(signalId)) return;
-        
-        const signal = this.signalHistory.find(s => s.id === signalId);
-        if (!signal) return;
-        
-        this.sentSignals.add(signal.id);
-        
-        this.addMessage('player', `Отправлен сигнал #${signal.id} (${signal.datetime})`, false);
-        
-        const scientist = this.SCIENTIST_PROFILES[this.currentContact];
-        let response;
-        
-        // ИСПРАВЛЕНИЕ: Правильно проверяем, является ли сигнал аномальным
-        if (signal.creepy) {
-          response = scientist.creepy[Math.floor(Math.random() * scientist.creepy.length)];
-        } else {
-          response = scientist.normal[Math.floor(Math.random() * scientist.normal.length)];
-        }
-        
-        setTimeout(() => {
-          // Для Петрова не добавляем класс creepy, даже если сигнал аномальный
-          this.addMessage('scientist', response, false);
-          if (this.currentContact === 'petrov') {
-            this.checkMissionProgress(signal.creepy);
-          }
-        }, 1000);
-        
-        this.signalSelect.value = '';
-        this.updateSignalSelect();
-        this.updateSendButton();
-
-        if (signal.creepy && Math.random() < 0.6) {
-          setTimeout(() => this.showUnknownContact(), 5000);
-        }
-      }
-
-      addMessage(sender, text, creepy, contact = this.currentContact) {
-        this.messages[contact].push({
-          sender,
-          text,
-          creepy
-        });
-        
-        // Обновляем чат только если это текущий контакт
-        if (contact === this.currentContact) {
-          this.updateChat();
-        }
-        
-        if (sender === 'scientist') {
-          this.unreadMessages[contact] = true;
-          this.showBadge(contact);
-        }
-      }
-
-      sendOlgaMessage() {
-        const friendlyMessages = [
-          "Как настроение? Не скучно там одному?",
-          "Заказала пиццу на ужин, заходи если хочешь!",
-          "Ты сегодня просто молодец! Горжусь тобой!",
-          "Нашла интересный рецепт, вечером приготовлю 😊",
-          "Не забывай делать перерывы! Береги глаза!",
-          "Как твои успехи с сигналами? Есть что-то интересное?",
-          "Ты отлично справляешься! Так держать!",
-          "Заказала тебе суши на ужин, держись там!",
-          "Скоро приду на станцию, приготовь кофе ☕",
-          "Не перерабатывай! Помни про отдых!"
-        ];
-        
-        const randomMessage = friendlyMessages[Math.floor(Math.random() * friendlyMessages.length)];
-        this.addMessage('scientist', randomMessage, false, 'olga');
-        this.showBadge('olga');
-      }
-
-      checkMissionProgress(isCreepy) {
-        if (this.currentContact !== 'petrov') return;
-        
-        const mission = this.missions[this.currentContact];
-        if (!mission) return;
-        
-        if (isCreepy) {
-          mission.creepyFound++;
-        }
-        mission.collected++;
-        
-        this.updateMissionInfo();
-        
-        if (mission.collected >= mission.target) {
-          this.completeMission();
-        }
-      }
-
-      generateMissionWithNotification(contact) {
-        if (contact !== 'petrov') return;
-        
-        const scientist = this.SCIENTIST_PROFILES[contact];
-        const missionData = scientist.missions[Math.floor(Math.random() * scientist.missions.length)];
-        
-        this.missions[contact] = {
-          target: missionData.target,
-          collected: 0,
-          creepyFound: 0,
-          text: missionData.text
-        };
-        
-        this.addMessage('scientist', 
-          `Новое задание получено: ${missionData.text}
-          
-Требуется собрать: ${missionData.target} сигналов
-Присылайте мне сигналы для анализа.`, false, 'petrov');
-        
-        this.showMissionInfo();
-        this.showBadge(contact);
-      }
-
-      updateMissionDisplay() {
-        if (this.currentContact === 'petrov' && this.missions.petrov) {
-          this.showMissionInfo();
-        } else {
-          this.missionInfo.style.display = 'none';
-        }
-      }
-
-      updateMissionInfo() {
-        if (this.currentContact === 'petrov') {
-          const mission = this.missions.petrov;
-          if (mission) {
-            this.missionText.textContent = `${mission.text} (${mission.collected}/${mission.target})`;
-            this.missionInfo.style.display = 'block';
-          }
-        }
-      }
-
-      showMissionInfo() {
-        if (this.currentContact === 'petrov') {
-          const mission = this.missions.petrov;
-          if (mission) {
-            this.missionText.textContent = `${mission.text} (${mission.collected}/${mission.target})`;
-            this.missionInfo.style.display = 'block';
-          }
-        }
-      }
-
-      completeMission() {
-        const mission = this.missions[this.currentContact];
-        const completionText = `Задание выполнено! Собрано ${mission.collected} сигналов. 
-Аномальных сигналов: ${mission.creepyFound}
-
-Отличная работа! Спасибо за помощь в исследованиях.`;
-
-        this.addMessage('scientist', completionText, false);
-        this.missions[this.currentContact] = null;
-        this.missionInfo.style.display = 'none';
-        this.hideBadge(this.currentContact);
-        
-        setTimeout(() => {
-          this.addMessage('scientist', 
-            `Отличная работа! Следующее задание будет доступно через 5 минут. 
-Продолжайте собирать сигналы и следить за телескопами.`, false);
-        }, 3000);
-        
-        if (this.currentContact === 'petrov') {
-          setTimeout(() => {
-            this.generateMissionWithNotification('petrov');
-          }, 300000);
-        }
-      }
-
-      showUnknownContact() {
-        const unknownContact = document.querySelector('.contact[data-contact="unknown"]');
-        const emptyContact = document.querySelector('.contact[data-contact="empty"]');
-        
-        if (unknownContact && emptyContact) {
-          emptyContact.style.display = 'none';
-          unknownContact.style.display = 'block';
-          this.showBadge('unknown');
-          
-          setTimeout(() => {
-            const creepyMessages = this.SCIENTIST_PROFILES.unknown.creepy;
-            const randomMessage = creepyMessages[Math.floor(Math.random() * creepyMessages.length)];
-            
-            // Берем случайный сигнал из истории
-            if (this.signalHistory.length > 0) {
-              const randomSignal = this.signalHistory[Math.floor(Math.random() * this.signalHistory.length)];
-              
-              // Заменяем ... на дату и время сигнала
-              const finalMessage = randomMessage.replace('...', `№${randomSignal.id}`);
-              
-              this.addMessage('scientist', finalMessage, true, 'unknown');
-            } else {
-              // Если истории нет, используем текущую дату и время
-              const now = new Date();
-              const currentDateTime = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
-              const finalMessage = randomMessage.replace('...', `№${signalId}`);
-              
-              this.addMessage('scientist', finalMessage, true, 'unknown');
-            }
-          }, 2000);
-        }
-      }
-
-      showBadge(contact) {
-        const badge = document.getElementById(`${contact}-badge`);
-        if (badge) {
-          badge.style.display = 'block';
-        }
-        this.updateMailTabBadge();
-      }
-
-      hideBadge(contact) {
-        const badge = document.getElementById(`${contact}-badge`);
-        if (badge) {
-          badge.style.display = 'none';
-        }
-      }
-
-      updateMailTabBadge() {
-        const mailTab = document.querySelector('.tab[data-tab="mail"]');
-        const hasUnread = Object.values(this.unreadMessages).some(unread => unread);
-        
-        if (hasUnread && !mailTab.querySelector('.badge')) {
-          const badge = document.createElement('span');
-          badge.className = 'badge';
-          badge.textContent = '●';
-          mailTab.appendChild(badge);
-        } else if (!hasUnread) {
-          const badge = mailTab.querySelector('.badge');
-          if (badge) badge.remove();
-        }
-      }
-
-      // Основные функции игры
-      async loadSignals() {
-        try {
-          this.loadingStatus.textContent = 'Загрузка нормальных сигналов...';
-          
-          const normalResponse = await fetch('normal_signals.txt');
-          if (!normalResponse.ok) throw new Error('Не удалось загрузить normal_signals.txt');
-          const normalText = await normalResponse.text();
-          this.NORMAL_SIGNALS = this.parseSignals(normalText);
-
-          this.loadingStatus.textContent = 'Загрузка аномальных сигналов...';
-          
-          const creepyResponse = await fetch('creepy_signals.txt');
-          if (!creepyResponse.ok) throw new Error('Не удалось загрузить creepy_signals.txt');
-          const creepyText = await creepyResponse.text();
-          this.CREEPY_SIGNALS = this.parseSignals(creepyText);
-
-          if (this.NORMAL_SIGNALS.length === 0 || this.CREEPY_SIGNALS.length === 0) {
-            throw new Error('Файлы сигналов пусты');
-          }
-
-          this.loadingStatus.textContent = '';
-          this.updateReceiveButton();
-          this.receiveBtn.textContent = 'Принять сигнал';
-          this.statusText.value = 'Система готова к работе.';
-
-        } catch (error) {
-          console.error('Ошибка загрузки сигналов:', error);
-          this.loadingStatus.textContent = `Ошибка загрузки: ${error.message}`;
-          this.loadingStatus.style.color = 'var(--creepy-red)';
-          
-          this.NORMAL_SIGNALS = ["Резервный нормальный сигнал: система работает в штатном режиме"];
-          this.CREEPY_SIGNALS = ["Резервный аномальный сигнал: ОШИБКА СИСТЕМЫ"];
-          this.updateReceiveButton();
-          this.receiveBtn.textContent = 'Принять сигнал (резервный режим)';
-          this.statusText.value = 'Система готова к работе. (резервный режим)';
-        }
-      }
-
-      parseSignals(text) {
-        return text.split('\n')
-          .map(line => line.trim())
-          .filter(line => line.length > 0);
       }
 
       switchTab(tab) {
-        this.tabs.forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.style.display = 'none');
+        
         tab.classList.add('active');
-        const target = tab.dataset.tab;
-        this.tabContents.forEach(tc => {
-          tc.style.display = (tc.id === target) ? 'flex' : 'none';
-        });
-        
-        if (target === 'mail') {
-          this.updateSignalSelect();
-        }
+        document.getElementById(tab.dataset.tab).style.display = 'flex';
       }
 
-      toggleFilter() {
-        if (this.filterToggle.checked) {
-          this.filterStatus.textContent = 'ВКЛ';
-          this.filterStatus.classList.add('active');
-          this.statusText.value = 'Фильтр активирован. Повторяющиеся частоты блокируются.';
-        } else {
-          this.filterStatus.textContent = 'ВЫКЛ';
-          this.filterStatus.classList.remove('active');
-          this.statusText.value = 'Фильтр деактивирован. Все частоты доступны.';
-        }
-      }
+      receiveSignal() {
+        const btn = document.getElementById('receive-btn');
+        const status = document.getElementById('status-text');
+        
+        btn.disabled = true;
+        status.textContent = "СКАНИРОВАНИЕ... ОБНАРУЖЕНИЕ СИГНАЛОВ...";
 
-      getRandomSignal(signalArray, usedSet) {
-        if (!this.filterToggle.checked) {
-          return signalArray[Math.floor(Math.random() * signalArray.length)];
-        }
+        // С вероятностью 30% криповый сигнал от хохла
+        this.isCreepy = Math.random() < 0.3;
         
-        if (usedSet.size >= signalArray.length) {
-          usedSet.clear();
-        }
-        
-        const availableSignals = signalArray.filter((_, index) => !usedSet.has(index));
-        
-        if (availableSignals.length === 0) {
-          usedSet.clear();
-          return signalArray[Math.floor(Math.random() * signalArray.length)];
-        }
-        
-        const randomIndex = Math.floor(Math.random() * availableSignals.length);
-        const signalIndex = signalArray.indexOf(availableSignals[randomIndex]);
-        
-        usedSet.add(signalIndex);
-        return availableSignals[randomIndex];
-      }
-
-      renderTelescopes() {
-        const fragment = document.createDocumentFragment();
-        
-        this.TELESCOPES.forEach((t, i) => {
-          const tr = document.createElement('tr');
-          
-          tr.innerHTML = `
-            <td>${t.name}</td>
-            <td class="${t.status === 'online' ? 'status-online' : 'status-offline'}">
-              ${t.status === 'online' ? 'Онлайн' : 'Оффлайн'}
-            </td>
-            <td class="${t.connection === 'Хорошее' ? 'connection-good' : 'connection-bad'}">
-              ${t.connection}
-            </td>
-            <td>
-              <button class="reconnect-btn" 
-                      ${t.status === 'online' || this.reconnectInProgress.has(i) ? 'disabled' : ''}>
-                Переподключить
-              </button>
-            </td>
-          `;
-          
-          const button = tr.querySelector('.reconnect-btn');
-          button.addEventListener('click', () => this.reconnectTelescope(i));
-          
-          fragment.appendChild(tr);
-        });
-        
-        this.telescopesBody.innerHTML = '';
-        this.telescopesBody.appendChild(fragment);
-        this.updateTelescopeTabBadge();
-      }
-
-      updateTelescopeTabBadge() {
-        const tab = document.querySelector('.tab[data-tab="telescopes"]');
-        const hasBroken = this.TELESCOPES.some(t => t.status === 'offline');
-        if (hasBroken) {
-          if (!tab.querySelector('.badge')) {
-            const badge = document.createElement('span');
-            badge.className = 'badge';
-            badge.textContent = '●';
-            tab.appendChild(badge);
-          }
-        } else {
-          const badge = tab.querySelector('.badge');
-          if (badge) badge.remove();
-        }
-      }
-
-      updateReceiveButton() {
-        const allOnline = this.TELESCOPES.every(t => t.status === 'online');
-        const signalsLoaded = this.NORMAL_SIGNALS.length > 0 && this.CREEPY_SIGNALS.length > 0;
-        this.receiveBtn.disabled = !allOnline || !signalsLoaded || this.isDecrypting;
-      }
-
-      async receiveSignal() {
-        const allOnline = this.TELESCOPES.every(t => t.status === 'online');
-        if (!allOnline) {
-          this.statusText.value = 'Ошибка: не все телескопы онлайн';
-          return;
-        }
-
-        if (this.NORMAL_SIGNALS.length === 0 || this.CREEPY_SIGNALS.length === 0) {
-          this.statusText.value = 'Ошибка: сигналы не загружены';
-          return;
-        }
-
-        this.receiveBtn.disabled = true;
-        this.decryptBtn.disabled = true;
-        this.binaryText.value = '';
-        this.resultText.value = '';
-        this.statusText.value = '';
-
-        this.priemAudio.currentTime = 0;
-        this.priemAudio.play();
-
-        this.currentBinarySignal = Array.from({length: 100}, () => Math.random() < 0.5 ? '0' : '1').join('');
-        
-        this.creepyActive = Math.random() < 0.3;
-        
-        this.currentResultSignal = this.creepyActive
-          ? this.getRandomSignal(this.CREEPY_SIGNALS, this.usedCreepySignals)
-          : this.getRandomSignal(this.NORMAL_SIGNALS, this.usedNormalSignals);
-
-        await Promise.all([
-          this.animateStatusLoading('Получение сигнала'),
-          this.animateBinaryWithNoise(this.binaryText, this.currentBinarySignal)
-        ]);
-
-        this.priemAudio.pause();
-
-        this.statusText.value = 'Сигнал получен. Ожидание расшифровки.';
-        this.decryptBtn.disabled = false;
-        this.updateReceiveButton();
-      }
-
-      async decryptSignal() {
-        this.isDecrypting = true;
-        this.updateReceiveButton();
-        this.decryptBtn.disabled = true;
-        
-        this.currentDecryptAudio = Math.random() < 0.5 ? this.decryptAudio1 : this.decryptAudio2;
-        this.currentDecryptAudio.currentTime = 0;
-        this.currentDecryptAudio.play();
-        
-        this.statusText.value = 'Очистка сигнала от шумов';
-        await this.animateStatusLoading('Очистка сигнала от шумов', 2000);
-
-        await this.cleanBinaryFromNoise(this.binaryText, this.binaryText.value);
-
-        this.statusText.value = 'Декодирование сигнала';
-        await this.animateStatusLoading('Декодирование сигнала', 2000);
-        
-        this.currentDecryptAudio.pause();
-        this.currentDecryptAudio.currentTime = 0;
-        
-        const displayResult = this.currentResultSignal.replace(/\\n/g, '\n');
-        await this.animateText(this.resultText, displayResult, this.creepyActive);
-
-        if (this.creepyActive) {
-          this.statusText.value = 'Расшифровка завершена. Обнаружена аномалия.';
-          this.breakRandomTelescope();
-        } else {
-          this.statusText.value = 'Расшифровка завершена.';
-        }
-
-        this.addSignalToHistory(this.currentBinarySignal, this.currentResultSignal, this.creepyActive);
-        
-        this.isDecrypting = false;
-        this.updateReceiveButton();
-      }
-
-      // Анимации
-      animateStatusLoading(baseMessage, duration = 3000) {
-        let dots = 0;
-        this.statusText.value = baseMessage;
-        return new Promise(resolve => {
-          const interval = setInterval(() => {
-            dots = (dots + 1) % 6;
-            this.statusText.value = baseMessage + '.'.repeat(dots);
-          }, 400);
-          setTimeout(() => {
-            clearInterval(interval);
-            resolve();
-          }, duration);
-        });
-      }
-
-      animateText(element, text, creepy = false) {
-        return new Promise(resolve => {
-          element.value = '';
-          const lines = text.split('\n');
-          let currentLine = 0;
-          let currentChar = 0;
-          let soundCounter = 0;
-          
-          function step() {
-            if (currentLine >= lines.length) {
-              resolve();
-              return;
-            }
-            
-            if (currentChar < lines[currentLine].length) {
-              element.value += lines[currentLine][currentChar];
-              currentChar++;
-              
-              soundCounter++;
-              if (soundCounter % 3 === 0) {
-                setTimeout(() => {
-                  try {
-                    this.comSound.currentTime = 0;
-                    this.comSound.play().catch(e => {});
-                  } catch (e) {}
-                }, 10);
-              }
-              
-            } else {
-              element.value += '\n';
-              currentLine++;
-              currentChar = 0;
-            }
-            
-            if (creepy) {
-              element.style.color = 'var(--creepy-red)';
-              element.style.textShadow = '0 0 10px var(--creepy-red-glow), 0 0 20px var(--creepy-red-glow)';
-            } else {
-              element.style.color = 'var(--soft-yellow)';
-              element.style.textShadow = '0 0 5px var(--soft-yellow-glow), 0 0 15px var(--soft-yellow-glow)';
-            }
-            element.scrollTop = element.scrollHeight;
-            
-            setTimeout(step.bind(this), 50);
-          }
-          
-          step.call(this);
-        });
-      }
-
-      animateBinaryWithNoise(element, binaryStr) {
-        return new Promise(resolve => {
-          element.value = '';
-          let i = 0;
-          const noiseChars = ['|', '-', '~', '*'];
-          function step() {
-            if (i >= binaryStr.length) {
-              resolve();
-              return;
-            }
-            element.value += binaryStr[i];
-            if (Math.random() < 0.5) {
-              element.value += noiseChars[Math.floor(Math.random() * noiseChars.length)];
-            }
-            element.scrollTop = element.scrollHeight;
-            i++;
-            setTimeout(step, 30);
-          }
-          step();
-        });
-      }
-
-      cleanBinaryFromNoise(element, binaryStr) {
-        return new Promise(resolve => {
-          let i = 0;
-          const cleanBinary = binaryStr.replace(/[^01]/g, '');
-          
-          function step() {
-            if (i >= cleanBinary.length) {
-              resolve();
-              return;
-            }
-            element.value = cleanBinary.substring(0, i + 1);
-            element.scrollTop = element.scrollHeight;
-            i++;
-            setTimeout(step, 20);
-          }
-          step();
-        });
-      }
-
-      // История сигналов
-      addSignalToHistory(binary, result, creepy) {
-        const now = new Date();
-        let dtStr = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
-        const id = this.nextSignalId++;
-        this.signalHistory.push({
-          id, 
-          datetime: dtStr, 
-          binary, 
-          result,
-          creepy
-        });
-        this.renderHistory();
-        
-        // Увеличиваем счетчик полученных сигналов
-        this.signalsReceived++;
-        
-        // Проверяем, не пора ли отправить сообщение от Ольги
-        if (this.signalsReceived >= this.nextOlgaMessageThreshold) {
-          this.sendOlgaMessage();
-          this.signalsReceived = 0;
-          this.nextOlgaMessageThreshold = this.getRandomOlgaThreshold();
-        }
-        
-        if (document.getElementById('mail').style.display !== 'none') {
-          this.updateSignalSelect();
-        }
-      }
-
-      renderHistory() {
-        const fragment = document.createDocumentFragment();
-        
-        this.signalHistory.forEach(signal => {
-          const div = document.createElement('div');
-          div.className = 'option';
-          div.textContent = `${signal.id}. ${signal.datetime}`;
-          div.dataset.id = signal.id;
-          div.addEventListener('click', () => this.selectSignal(signal.id));
-          fragment.appendChild(div);
-        });
-        
-        this.historyList.innerHTML = '';
-        this.historyList.appendChild(fragment);
-      }
-
-      selectSignal(id) {
-        const signal = this.signalHistory.find(s => s.id === id);
-        if (!signal) return;
-        
-        this.historyList.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-        const selected = this.historyList.querySelector(`[data-id="${id}"]`);
-        if (selected) selected.classList.add('selected');
-        
-        this.statusText.value = 'Сигнал из истории.';
-        this.binaryText.value = signal.binary;
-        
-        const displayResult = signal.result.replace(/\\n/g, '\n');
-        this.resultText.value = displayResult;
-        
-        this.decryptBtn.disabled = true;
-        if (signal.creepy) {
-          this.resultText.style.color = 'var(--creepy-red)';
-          this.resultText.style.textShadow = '0 0 10px var(--creepy-red-glow), 0 0 20px var(--creepy-red-glow)';
-        } else {
-          this.resultText.style.color = 'var(--soft-yellow)';
-          this.resultText.style.textShadow = '0 0 5px var(--soft-yellow-glow), 0 0 15px var(--soft-yellow-glow)';
-        }
-      }
-
-      deleteSelectedSignal() {
-        const selected = this.historyList.querySelector('.option.selected');
-        if (!selected) return;
-        
-        const selectedId = parseInt(selected.dataset.id);
-        
-        this.sentSignals.delete(selectedId);
-        
-        this.signalHistory = this.signalHistory.filter(s => s.id !== selectedId);
-        this.renderHistory();
-        
-        this.statusText.value = 'Система готова к работе.';
-        this.binaryText.value = '';
-        this.resultText.value = '';
-        this.decryptBtn.disabled = true;
-        
-        this.updateSignalSelect();
-      }
-
-      // Дополнительные функции
-      startAmbient() {
-        if (!this.ambientStarted) {
-          this.ambientAudio.play().then(() => {
-            this.ambientStarted = true;
-          }).catch((e) => {
-            console.log('Ошибка воспроизведения ambient.mp3:', e);
-          });
-        }
-      }
-
-      breakRandomTelescope() {
-        const onlineTelescopes = this.TELESCOPES.filter(t => t.status === 'online');
-        if (onlineTelescopes.length === 0) return;
-        const broken = onlineTelescopes[Math.floor(Math.random() * onlineTelescopes.length)];
-        broken.status = 'offline';
-        broken.connection = 'Нет связи';
-        this.renderTelescopes();
-        this.updateReceiveButton();
-        this.radiooffAudio.currentTime = 0;
-        this.radiooffAudio.play();
-      }
-
-      async reconnectTelescope(index) {
-        if (this.reconnectInProgress.has(index)) return;
-        this.reconnectInProgress.add(index);
-        
-        const telescope = this.TELESCOPES[index];
-        if (telescope.status === "online") {
-          this.reconnectInProgress.delete(index);
-          return;
-        }
-        
-        telescope.connection = "Переподключение...";
-        this.renderTelescopes();
-        this.updateReceiveButton();
-        
-        await this.animateConnectionLoading(index);
-        this.reconnectInProgress.delete(index);
-      }
-
-      animateConnectionLoading(telescopeIndex) {
-        const frames = ["░ ░ ░ ░", "▓ ░ ░ ░", "▓ ▓ ░ ░", "▓ ▓ ▓ ░", "▓ ▓ ▓ ▓"];
-        const telescope = this.TELESCOPES[telescopeIndex];
-        const repeatCount = Math.floor(Math.random() * 3) + 1;
-        let frameIndex = 0;
-        let repeatsDone = 0;
-        
-        return new Promise(resolve => {
-          const nextFrame = () => {
-            telescope.connection = frames[frameIndex];
-            this.renderTelescopes();
-            frameIndex++;
-            if (frameIndex >= frames.length) {
-              frameIndex = 0;
-              repeatsDone++;
-            }
-            if (repeatsDone < repeatCount) {
-              setTimeout(nextFrame, 1000);
-            } else {
-              telescope.status = "online";
-              telescope.connection = "Хорошее";
-              this.renderTelescopes();
-              this.updateReceiveButton();
-              this.statusText.value = "Соединение восстановлено.";
-              resolve();
-            }
-          };
-          nextFrame();
-        });
-      }
-
-      // Инициализация игры
-      async init() {
-        this.renderTelescopes();
-        this.updateReceiveButton();
-        await this.loadSignals();
-        this.updateReceiveButton();
-        
-        // Показываем пустой контакт
-        document.querySelector('.contact[data-contact="empty"]').style.display = 'block';
-        
-        // Приветственное сообщение от Петрова (только в его чат)
         setTimeout(() => {
-          this.addMessage('scientist', 
-            `Добро пожаловать в проект EchoNet, оператор!
+          if (this.isCreepy) {
+            this.currentSignal = this.creepySignals[Math.floor(Math.random() * this.creepySignals.length)];
+            status.innerHTML = '<span class="creepy-text">ОБНАРУЖЕН АНОМАЛЬНЫЙ СИГНАЛ! ХОХОЛ АКТИВЕН!</span>';
+          } else {
+            this.currentSignal = this.signals[Math.floor(Math.random() * this.signals.length)];
+            status.textContent = "СИГНАЛ ОБНАРУЖЕН! ГОТОВ К ДЕШИФРОВКЕ!";
+          }
 
-Я - Доктор Петров, ваш научный руководитель. Наша миссия - мониторинг космических сигналов и поиск аномалий.
-
-Ваши задачи:
-• Принимайте сигналы и расшифровывайте их
-• Следите за состоянием радиотелескопов
-• Присылайте мне интересные сигналы для анализа
-• Будьте внимательны - некоторые сигналы могут быть аномальными
-
-Скоро дам первое задание. Удачи!`, false, 'petrov');
+          this.generateBinarySignal();
+          document.getElementById('decrypt-btn').disabled = false;
+          btn.disabled = false;
         }, 2000);
+      }
+
+      generateBinarySignal() {
+        const binaryText = document.getElementById('binary-text');
+        let binary = '';
         
-        // Первое задание через 10 секунд
+        for (let i = 0; i < 150; i++) {
+          binary += Math.random() > 0.5 ? '1' : '0';
+          if ((i + 1) % 25 === 0) binary += '\n';
+        }
+        
+        binaryText.textContent = binary;
+        binaryText.classList.add('signal-active');
+      }
+
+      decryptSignal() {
+        const decryptBtn = document.getElementById('decrypt-btn');
+        const resultText = document.getElementById('result-text');
+        const statusText = document.getElementById('status-text');
+        
+        decryptBtn.disabled = true;
+        statusText.textContent = "ДЕШИФРОВКА... АНАЛИЗ ДАННЫХ...";
+
         setTimeout(() => {
-          this.generateMissionWithNotification('petrov');
-        }, 10000);
+          resultText.textContent = this.currentSignal;
+          resultText.classList.add('signal-active');
+          
+          if (this.isCreepy) {
+            resultText.classList.add('creepy-text');
+            statusText.innerHTML = '<span class="creepy-text">ВНИМАНИЕ! ОБНАРУЖЕНА УГРОЗА! ХОХОЛ АТАКУЕТ!</span>';
+          } else {
+            statusText.textContent = "ДЕШИФРОВКА ЗАВЕРШЕНА! СЛАВА РОССИИ!";
+          }
+
+          this.addToHistory();
+        }, 1500);
+      }
+
+      addToHistory() {
+        const historyList = document.getElementById('history-list');
+        const entry = document.createElement('div');
+        const timestamp = new Date().toLocaleTimeString();
+        
+        entry.innerHTML = `
+          <div style="padding: 10px; border-bottom: 1px solid var(--border-color);">
+            <strong>${timestamp}</strong> - 
+            ${this.isCreepy ? '<span class="creepy-text">ХОХОЛ</span>' : 'РОССИЙСКИЙ СИГНАЛ'}
+          </div>
+        `;
+        
+        historyList.appendChild(entry);
+      }
+
+      clearHistory() {
+        document.getElementById('history-list').innerHTML = '';
+      }
+
+      updateSystemStatus() {
+        // Имитация работы систем
+        setInterval(() => {
+          const status = document.getElementById('system-status');
+          const messages = [
+            "ВСЕ СИСТЕМЫ АКТИВНЫ - ZOV РАБОТАЕТ",
+            "МОНИТОРИНГ ГРАНИЦ - СЛАВА РОССИИ!",
+            "СИГНАЛЫ ЧИСТЫ - ВРАГ НЕ ПРОЙДЕТ!",
+            "ZOVNET В БОЕВОЙ ГОТОВНОСТИ!",
+            "ХОХЛЫ СДАЮТ ГОРОДА - МЫ ПОБЕЖДАЕМ!",
+            "УКРОПЫ БЕГУТ - РОССИЯ ВПЕРЁД!"
+          ];
+          status.textContent = messages[Math.floor(Math.random() * messages.length)];
+        }, 5000);
       }
     }
 
-    // Запуск игры
+    // Запуск игры при загрузке
     document.addEventListener('DOMContentLoaded', () => {
-      const game = new EchoNetGame();
-      game.init();
+      new ZovNetGame();
     });
   </script>
 </body>
 </html>
-
-
-
-
-
